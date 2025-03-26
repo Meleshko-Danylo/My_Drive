@@ -1,0 +1,142 @@
+.RegisterForm-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+}
+
+.Links{
+    align-self: start;
+    text-decoration: none;
+    color: #bde4ed;
+}
+
+.Links:hover {
+    text-decoration: underline;
+}
+
+.RegisterForm-container h1{
+    opacity: 0.9;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.RegisterForm-container h1:hover{
+    opacity: 1;
+    animation-name: h1Animation;
+    animation-duration: 1.4s;
+}
+
+@keyframes h1Animation {
+    0%{
+        transform: rotate(-10deg);
+    }
+    25%{
+        transform: rotate(10deg);
+    }
+    50%{
+        transform: rotate(-5deg);
+    }
+    75%{
+        transform: rotate(5deg);
+    }
+    100%{
+        transform: rotate(0);
+    }
+}
+
+.Form-LogIn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    min-height: 230px;
+
+    background-color: var(--dark-gray);
+    padding: 20px;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.Form-LogIn:hover{
+    opacity: 1;
+}
+
+.Form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 250px;
+
+    background-color: var(--dark-gray);
+    padding: 20px;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+    opacity: 0.8;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.Form:hover{
+    opacity: 1;
+}
+
+.FormItem{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.FormItem input{
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.FormItem input:hover{
+    animation-name: Hover;
+    animation-duration: 0.55s;
+}
+
+.FormItem input:focus{
+    outline: none;
+    border: 2px solid cornflowerblue;
+}
+
+.FormSubmitButton button{
+    padding: 8px 18px;
+    color: white;
+    border: 2px solid var(--black);
+    border-radius: 4px;
+    background-color: var(--ligth-gray);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.FormSubmitButton button:hover{
+    background-color: var(--light-gray-2-hover);
+    animation-name: Hover;
+    animation-duration: 0.55s;
+}
+
+@keyframes Hover {
+    0%{
+        transform: scale(0.95);
+    }
+    50%{
+        transform: scale(1.05);
+    }
+    100%{
+        transform: scale(1);
+    }
+}

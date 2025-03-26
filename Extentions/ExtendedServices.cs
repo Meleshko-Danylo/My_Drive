@@ -31,11 +31,10 @@ public static class ExtendedServices
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders()
             .AddSignInManager();
-
-        services.AddDistributedMemoryCache();
+        
         services.AddSession(opt =>
         {
-            opt.IdleTimeout = TimeSpan.FromDays(1);
+            opt.IdleTimeout = TimeSpan.FromMinutes(20);
             opt.Cookie.HttpOnly = true;
             opt.Cookie.IsEssential = true;
             opt.Cookie.Name = "MyDrive.Session";
@@ -46,9 +45,27 @@ public static class ExtendedServices
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(opt =>
             {
-                opt.Cookie.Name = "MyDrive.Session";
+                opt.Cookie.Name = "MyDrive.Auth";
                 opt.ExpireTimeSpan = TimeSpan.FromDays(14);
             });
+
+        services.AddDistributedMemoryCache();
+        
+        // services.AddDistributedSqlServerCache(options => {
+        //     options.ConnectionString = configuration.GetConnectionString("DefaultConnection");
+        //     options.SchemaName = "dbo";
+        //     options.TableName = "Sessions";
+        // });
+
+        services.AddCors(policy =>
+        {
+            policy.AddPolicy("Development", opt =>
+            {
+                opt.AllowAnyOrigin();
+                opt.AllowAnyMethod();
+                opt.AllowAnyHeader();
+            });
+        });
         
         return services;
     }

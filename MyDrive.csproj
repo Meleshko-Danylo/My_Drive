@@ -22,13 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-      <Folder Include="DTO\" />
       <Folder Include="my-drive-client\public\images\" />
-      <Folder Include="my-drive-client\src\Api\" />
-      <Folder Include="my-drive-client\src\Components\" />
-      <Folder Include="my-drive-client\src\Core\" />
-      <Folder Include="my-drive-client\src\Hooks\" />
       <Folder Include="Services\" />
     </ItemGroup>
 

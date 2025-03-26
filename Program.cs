@@ -1,21 +1,65 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using MyDrive.Data;
+using MyDrive.Extentions;
+using MyDrive.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddExtendedServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    var dbCreator = dbContext.Database.GetService<IDatabaseCreator>() as IRelationalDatabaseCreator;
+
+    if (dbCreator != null && !dbCreator.CanConnect()) await dbContext.Database.MigrateAsync();
+    if (dbCreator != null && !dbCreator.HasTables()) await dbContext.Database.MigrateAsync();
+
+    if (!await dbContext.AppUsers.AnyAsync())
+    {
+        var admin = new AppUser()
+        {
+            UserName = builder.Configuration["Admin:UserName"],
+            Email = builder.Configuration["Admin:Email"]
+        };
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+        await userManager.CreateAsync(admin, builder.Configuration["Admin:Password"]!);
+        await userManager.AddToRoleAsync(admin,"Admin");
+    }
+    if(!await dbContext.Folders.AnyAsync())
+    {
+        var folder = new Folder()
+        {
+            Id = Guid.NewGuid(),
+            Name="Root",
+            Path = "/",
+            CreatedAt = DateTime.UtcNow,
+            IsAccessible = true,
+            ParentFolderId= null,
+            ParentFolder = null
+        };
+        await dbContext.Folders.AddAsync(folder);
+        await dbContext.SaveChangesAsync();
+    }
+} 
+
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors("Development");
 
 app.UseRouting();
 app.UseSession();

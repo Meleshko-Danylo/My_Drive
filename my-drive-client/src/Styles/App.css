@@ -1,38 +1,80 @@
-.App {
-  text-align: center;
+.App{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  height: 100vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/*Folder manager*/
+.folders-container{
   display: flex;
   flex-direction: column;
+  /*align-items: start;*/
+  /*justify-content: start;*/
+  /*gap: 10px;*/
+  width: 30%;
+  box-shadow: var(--shadow-border);
+  border-radius: 10px;
+  opacity: 0.95;
+  color: var(--darker-white);
+}
+
+.toolsBar{
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
+  /*gap: 10px;*/
+  padding: 10px;
+  /*border-radius: 10px;*/
+  background-color: var(--black);
 }
 
-.App-link {
-  color: #61dafb;
+.full-path{
+  
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.toolsBar-buttons{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px 0;
+}
+
+.addFolder{
+  border: none;
+  background-color: var(--dark-teal);
+  box-shadow: var(--shadow-ledge);
+  padding: 5px;
+}
+
+.uploadFile{
+  border: none;
+  background-color: indianred;
+  box-shadow: var(--shadow-ledge);
+  padding: 5px;
+}
+
+.insideDirectory{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 10px;
+}
+
+/*Files display container*/
+.files-representation-container{
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  box-shadow: var(--shadow-border);
+  opacity: 0.95;
+  color: var(--darker-white);
+  border-radius: 10px;
+  border: none;
+}
+
+.representation-wrapper{
+  background-color: var(--dark-white);
 }

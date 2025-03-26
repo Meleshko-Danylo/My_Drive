@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyDrive.Models;
 
-public class AppUser: IdentityUser
-{
-    
-}
+public class AppUser: IdentityUser { }
