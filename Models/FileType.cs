@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyDrive.Models;
 
@@ -13,7 +14,7 @@ public class FileType
 
     [Required]
     [StringLength(512, MinimumLength = 1)]
-    public required string FullPath { get; set; }
+    public required string Path { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

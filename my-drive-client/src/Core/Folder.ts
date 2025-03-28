@@ -1,10 +1,18 @@
 export type Folder = {
+    id: string,
     name: string,
-    fullPath: string,
+    path: string,
     files: File[],
     subFolders: Folder[],
     isAccessible: boolean,
     createdAt: Date,
     size: number,
-    parentFolderId: string | null
+    parentFolderId: string | null,
+};
+
+export type CreateFolderDto = {
+    name: string,
+    path: string,
+    isAccessible: boolean,
+    parentFolderId: string
 };

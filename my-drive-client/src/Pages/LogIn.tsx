@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from "axios";
 import {Link} from "react-router";
+import {axiosInstance} from "../index";
 
 const LogIn = () => {
     const [form, setForm] = useState({
@@ -10,15 +11,20 @@ const LogIn = () => {
 
     const handleSubmit = async (e:any) => {
         e.preventDefault();
-        // if(form.email.includes("@") && form.password.length >= 8){
-        //     const response = await axios.post("/Auth/LogIn", form);
-        //     if(response.status === 200){
-        //         window.location.assign("/App");
-        //     }
-        // }
-        // else {
-        //     console.error("Please enter a valid email address or password");
-        // }
+        try {
+            if(form.email.includes("@") && form.password.length >= 8){
+                const response = await axiosInstance.post("/Auth/LogIn", form);
+                if(response.status === 200){
+                    window.location.assign("/App");
+                }
+            }
+            else {
+                console.error("Please enter a valid email address or password");
+            }   
+        }
+        catch(err){
+            console.log("Error", err)
+        }
     }
 
     return (

@@ -1,15 +1,14 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using MyDrive.Models;
 
-namespace MyDrive.Models;
+namespace MyDrive.DTO;
 
-public class Folder
+public class UpdateFolderDto
 {
-    [Key]
     public Guid Id { get; set; }
 
-    [Required]
     [StringLength(256, MinimumLength = 1)]
+    [Required]
     public required string Name { get; set; }
 
     [Required]
@@ -20,12 +19,12 @@ public class Folder
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [Required]
-    public bool IsAccessible { get; set; } = false;
-    
+    public bool IsAccessible { get; set; } = true;
+
+    [Required]
     public long Size { get; set; }
-    public Guid? ParentFolderId { get; set; }
-    // [JsonIgnore]
-    // public Folder? ParentFolder { get; set; }
+    public Guid ParentFolderId { get; set; }
+    public Folder ParentFolder { get; set; }
     public List<Folder> SubFolders { get; set; } = new();
     public List<FileType> Files { get; set; } = new();
 }

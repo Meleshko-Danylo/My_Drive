@@ -32,6 +32,12 @@ public static class ExtendedServices
             .AddDefaultTokenProviders()
             .AddSignInManager();
         
+        services.AddDistributedSqlServerCache(options => {
+            options.ConnectionString = configuration.GetConnectionString("DefaultConnection");
+            options.SchemaName = "dbo";
+            options.TableName = "Sessions";
+        });
+        
         services.AddSession(opt =>
         {
             opt.IdleTimeout = TimeSpan.FromMinutes(20);
@@ -49,21 +55,14 @@ public static class ExtendedServices
                 opt.ExpireTimeSpan = TimeSpan.FromDays(14);
             });
 
-        services.AddDistributedMemoryCache();
-        
-        // services.AddDistributedSqlServerCache(options => {
-        //     options.ConnectionString = configuration.GetConnectionString("DefaultConnection");
-        //     options.SchemaName = "dbo";
-        //     options.TableName = "Sessions";
-        // });
-
         services.AddCors(policy =>
         {
             policy.AddPolicy("Development", opt =>
             {
-                opt.AllowAnyOrigin();
+                opt.WithOrigins("https://localhost:3000");
                 opt.AllowAnyMethod();
                 opt.AllowAnyHeader();
+                opt.AllowCredentials();
             });
         });
         

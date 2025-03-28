@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import Register from "./Pages/Register";
 import LogIn from "./Pages/LogIn";
 import axios from "axios";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -17,13 +18,17 @@ export const axiosInstance = axios.create({
     withCredentials: true
 });
 
+const queryClient = new QueryClient();
+
 root.render(
     <BrowserRouter>
-        <Routes>
-            <Route path="/App" element={<App />} />
-            <Route path="/Register" element={<Register />} />
-            <Route path="/" element={<LogIn />} />
-        </Routes>
+        <QueryClientProvider client={queryClient}>
+            <Routes>
+                <Route path="/App" element={<App />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/" element={<LogIn />} />
+            </Routes>
+        </QueryClientProvider>
     </BrowserRouter>
 );
 

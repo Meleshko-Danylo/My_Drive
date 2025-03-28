@@ -4,8 +4,11 @@ const FilesDisplayContainer = () => {
     return (
         <div className="files-representation-container">
             <div className="toolsBar">
-                <button className="addFolder"></button>
-                <button className="uploadFile"></button>
+                <span></span>
+                <div className="toolsBar-buttons">
+                    <button className="addFolder"></button>
+                    <button className="uploadFile"></button>
+                </div>
             </div>
             <div className="representation-wrapper">
 

@@ -30,32 +30,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     if (dbCreator != null && !dbCreator.CanConnect()) await dbContext.Database.MigrateAsync();
     if (dbCreator != null && !dbCreator.HasTables()) await dbContext.Database.MigrateAsync();
 
-    if (!await dbContext.AppUsers.AnyAsync())
-    {
-        var admin = new AppUser()
-        {
-            UserName = builder.Configuration["Admin:UserName"],
-            Email = builder.Configuration["Admin:Email"]
-        };
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-        await userManager.CreateAsync(admin, builder.Configuration["Admin:Password"]!);
-        await userManager.AddToRoleAsync(admin,"Admin");
-    }
-    if(!await dbContext.Folders.AnyAsync())
-    {
-        var folder = new Folder()
-        {
-            Id = Guid.NewGuid(),
-            Name="Root",
-            Path = "/",
-            CreatedAt = DateTime.UtcNow,
-            IsAccessible = true,
-            ParentFolderId= null,
-            ParentFolder = null
-        };
-        await dbContext.Folders.AddAsync(folder);
-        await dbContext.SaveChangesAsync();
-    }
+    await Seeding.SeedAsync(dbContext, userManager, roleManager, builder.Configuration);
 } 
 
 app.UseHttpsRedirection();

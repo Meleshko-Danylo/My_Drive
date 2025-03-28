@@ -1,6 +1,6 @@
 ﻿export type FileType = {
     name: string,
-    fullPath: string,
+    path: string,
     size: number,
     createdAt: Date,
     isAccessible: boolean,
