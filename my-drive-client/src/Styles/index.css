@@ -1,0 +1,49 @@
+:root{
+  --ligth-gray: rgb(49, 51, 56);
+  --black: rgb(30, 31, 34);
+  --dark-gray: rgb(43, 45, 49);
+  --light-gray-2-hover: rgb(64, 66, 73);
+  --gray: #888888;
+  --dark-white: #B0B0B0;
+  --darker-white: #E0E0E0;
+  --lavender: #B39CD0;
+  --light-cyan: #A8DADC;
+  --dark-teal: rgba(1, 98, 126, 0.74);
+  --deep-ruby: #822659;
+  
+  --shadow-border: 0 0 0 1px hsl(none 0% 100%/0.08);
+  --shadow-border-filter: drop-shadow(0 0 1px hsl(none 0% 100%/0.08));
+  --shadow-button-overlay: 0 12px 24px 0 hsl(none 0% 0%/0.24);
+  --shadow-button-overlay-filter: drop-shadow(0 12px 24px hsl(none 0% 0%/0.24));
+  --shadow-high: 0 12px 24px 0 hsl(none 0% 0%/0.24);
+  --shadow-high-filter: drop-shadow(0 12px 24px hsl(none 0% 0%/0.24));
+  --shadow-ledge: 0 2px 0 0 hsl(none 0% 0%/0.05), 0 1.5px 0 0 hsl(none 0% 0%/0.05), 0 1px 0 0 hsl(none 0% 0%/0.16);
+  --shadow-ledge-filter: drop-shadow(0 1.5px 0 hsl(none 0% 0%/0.24));
+  --shadow-low: 0 1px 4px 0 hsl(none 0% 0%/0.14);
+  --shadow-low-filter: drop-shadow(0 1px 4px hsl(none 0% 0%/0.14));
+  --shadow-low-active: 0 0 4px 0 hsl(none 0% 0%/0.14);
+  --shadow-low-active-filter: drop-shadow(0 0 4px hsl(none 0% 0%/0.14));
+  --shadow-low-hover: 0 4px 10px 0 hsl(none 0% 0%/0.14);
+  --shadow-low-hover-filter: drop-shadow(0 4px 10px hsl(none 0% 0%/0.14));
+  --shadow-medium: 0 4px 8px 0 hsl(none 0% 0%/0.16);
+  --shadow-medium-filter: drop-shadow(0 4px 8px hsl(none 0% 0%/0.16));
+  --shadow-mobile-navigator-x: 0 0 10px 0 hsl(none 0% 0%/0.22);
+  --shadow-mobile-navigator-x-filter: drop-shadow(0 0 10px hsl(none 0% 0%/0.22));
+  --shadow-top-high: 0 -12px 32px 0 hsl(none 0% 0%/0.24);
+  --shadow-top-high-filter: drop-shadow(0 -12px 32px hsl(none 0% 0%/0.24));
+  --shadow-top-ledge: 0 -2px 0 0 hsl(none 0% 0%/0.05), 0 -1.5px 0 0 hsl(none 0% 0%/0.05), 0 -1px 0 0 hsl(none 0% 0%/0.16);
+  --shadow-top-ledge-filter: drop-shadow(0 -1.5px 0 hsl(none 0% 0%/0.24));
+  --shadow-top-low: 0 -1px 4px 0 hsl(none 0% 0%/0.14);
+  --shadow-top-low-filter: drop-shadow(0 -1px 4px hsl(none 0% 0%/0.14));
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  background-color: var(--ligth-gray);
+}
+
+
+

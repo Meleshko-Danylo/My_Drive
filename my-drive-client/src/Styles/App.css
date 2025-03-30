@@ -1,0 +1,92 @@
+.App{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  height: 100vh;
+  padding: 0 250px;
+}
+
+/*Folder manager*/
+.folders-container{
+  display: flex;
+  flex-direction: column;
+  /*align-items: start;*/
+  /*justify-content: start;*/
+  /*gap: 10px;*/
+  color: white;
+  width: 30%;
+  box-shadow: var(--shadow-border);
+  border-radius: 10px;
+}
+
+.toolsBar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /*gap: 10px;*/
+  min-height: 3vh;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  background-color: var(--black);
+}
+
+.full-path{
+  
+}
+
+.toolsBar-buttons{
+  display: flex;
+  gap: 5px;
+  padding: 2px 0;
+}
+
+.toolsBar-buttons button{
+  cursor: pointer;
+}
+
+.addFolder{
+  border: none;
+  background-color: var(--dark-teal);
+  box-shadow: var(--shadow-ledge);
+  padding: 5px;
+}
+
+.uploadFile{
+  border: none;
+  background-color: indianred;
+  box-shadow: var(--shadow-ledge);
+  padding: 5px;
+}
+
+.insideDirectory{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 10px;
+  height: 70vh;
+  opacity: 0.7;
+  background-color: var(--gray);
+  border-radius: 0 0 10px 10px;
+}
+
+/*Files display container*/
+.files-representation-container{
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  min-height: 70vh;
+  box-shadow: var(--shadow-border);
+  opacity: 0.95;
+  color: var(--darker-white);
+  border-radius: 10px;
+  border: none;
+}
+
+.representation-wrapper{
+  height: 70vh;
+  opacity: 0.7;
+  background-color: var(--gray);
+  border-radius: 0 0 10px 10px;
+}
