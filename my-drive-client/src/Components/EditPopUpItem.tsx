@@ -3,8 +3,8 @@
 type EditPopUpItemProps = {
     label: string;
     inputType: string;
-    value: string;
-    onChange: (value: string) => void;
+    value?: any;
+    onChange: (value: any) => void;
     className?: string;
     children?: React.ReactNode;
 };
@@ -12,13 +12,15 @@ type EditPopUpItemProps = {
 const EditPopUpItem = ({ label, inputType, value, onChange, className, children}: EditPopUpItemProps) => {
     
     if(children) return <>{children}</>
-    
+
     return (
         <>
-            <label htmlFor={label}>{label}</label>
-            <input type={inputType} className={className ? className : "edit-popup-item-input"} 
-            name={label} value={value} 
-            onChange={(event)=> onChange(event.target.value)}/>
+            <div>
+                <label htmlFor={label}>{label}</label>
+                <input type={inputType} className={className ? className : "edit-popup-item-input"}
+                       name={label} value={value || ""}
+                       onChange={(event)=> onChange(event)}/>
+            </div>
         </>
     );
 };

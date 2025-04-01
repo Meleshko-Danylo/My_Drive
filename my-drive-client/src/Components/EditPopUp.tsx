@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, {useEffect} from 'react';
 
 type EditPopUpProps = {
     isOpen: boolean;
@@ -10,18 +10,28 @@ type EditPopUpProps = {
 
 const EditPopUp = ({isOpen, onClose, onSubmit, title, children}: EditPopUpProps) => {
     
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as Node;
+            const popUp = document.querySelector(".edit-popup");
+            if(popUp && !popUp.contains(target)) onClose();
+        }
+        if(isOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isOpen]);
+    
     if (!isOpen) return null;
     
     return (
         <div className="edit-popup">
             <form onSubmit={onSubmit}>
-                <h4>{title || ''}</h4>
+                <h3 style={{margin: 0, paddingBottom: "1rem"}}>{title || ''}</h3>
                 <div className="edit-popup-items">
                     {children}
                 </div>
                 <div className="edit-popup-buttons">
-                    <button type='submit'>Save</button>
-                    <button onClick={onClose}>Cancel</button>
+                    <button className="edit-popup-buttons-save" type='submit'>Save</button>
+                    <button className="edit-popup-buttons-cancel" onClick={onClose}>Cancel</button>
                 </div>
             </form>
         </div>

@@ -1,0 +1,86 @@
+.popup-menu {
+    z-index: 100;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+    position: absolute;
+    min-width: 80px;
+    padding: 0;
+}
+
+.popup-menu-option{
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+} 
+
+.popup-menu-option:hover{
+    color: white;
+    border-radius: 4px;
+    background-color: rgb(79, 163, 240);
+}
+
+.edit-popup{
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+    position: fixed;
+    min-width: 100px;
+    max-width: 180px;
+    padding: 5px 10px;
+}
+
+.edit-popup form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.edit-popup-items{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 5px;
+    gap: 12px;
+}
+
+.edit-popup-item-input{
+    padding: 6px 5px;
+    border-radius: 4px;
+    border: solid 1px #b0b0b0;
+}
+
+.edit-popup-buttons{
+    display: flex;
+    justify-content: end;
+    gap: 5px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+.edit-popup-buttons-save{
+    border: none;
+    border-radius: 4px;
+    background-color: rgb(79, 163, 240);
+    color: white;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.edit-popup-buttons-cancel{
+    border: none;
+    border-radius: 4px;
+    background-color: rgb(230, 230, 230);
+    color: black;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+

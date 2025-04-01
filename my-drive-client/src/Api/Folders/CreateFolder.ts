@@ -1,5 +1,6 @@
-﻿import {CreateFolderDto, Folder} from "../Core/Folder";
-import {axiosInstance} from "../index";
+﻿import {CreateFolderDto, Folder} from "../../Core/Folder";
+import {axiosInstance} from "../../index";
+
 
 export const CreateFolder = async (folder: CreateFolderDto):Promise<Folder> => {
     try {
