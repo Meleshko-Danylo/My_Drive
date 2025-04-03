@@ -4,17 +4,21 @@ type EditPopUpProps = {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: () => void;
+    buttonRef?: React.RefObject<HTMLElement | null>;
     title?: string | null;
     children: React.ReactNode;
 };
 
-const EditPopUp = ({isOpen, onClose, onSubmit, title, children}: EditPopUpProps) => {
+const FormPopUp = ({isOpen, onClose, onSubmit, title, children, buttonRef}: EditPopUpProps) => {
     
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as Node;
             const popUp = document.querySelector(".edit-popup");
-            if(popUp && !popUp.contains(target)) onClose();
+            let isButtonClicked = false;
+            
+            if(buttonRef) isButtonClicked = buttonRef.current?.contains(target) || false;
+            if(popUp && !popUp.contains(target) && !isButtonClicked) onClose();
         }
         if(isOpen) document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -38,4 +42,4 @@ const EditPopUp = ({isOpen, onClose, onSubmit, title, children}: EditPopUpProps)
     );
 };
 
-export default EditPopUp;
+export default FormPopUp;

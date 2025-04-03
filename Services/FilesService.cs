@@ -38,7 +38,8 @@ public class FilesService: IFilesService
             Path = fileRequest.FolderId + "/" + newFileName,
             CreatedAt = DateTime.UtcNow,
             StoragePath = filePath,
-            FolderId = fileRequest.FolderId
+            FolderId = fileRequest.FolderId,
+            IsAccessible = fileRequest.IsAccessible
         };
         await _db.Files.AddAsync(uploadedFile);
         folderExists.Size += uploadedFile.Size;

@@ -1,4 +1,4 @@
-﻿import React, {useState} from 'react';
+﻿import React, {useRef, useState} from 'react';
 import {FileType} from "../Core/FileType";
 import PopUpMenu from "./PopUpMenu";
 
@@ -10,6 +10,7 @@ type FileProps = {
 
 const FileItem = ({data, setIsOpenEdit, setFilerEditForm}: FileProps) => {
     const [isOpen, setIsOpen] = useState(false);
+    const buttonRef = useRef<HTMLButtonElement>(null);
     
     return (
         <div className="folderManager-item">
@@ -17,10 +18,11 @@ const FileItem = ({data, setIsOpenEdit, setFilerEditForm}: FileProps) => {
                 {data.name}
             </div>
             <div>
-                <button className="popup-button">:</button>
+                <button ref={buttonRef} className="popup-button">:</button>
                 <PopUpMenu isOpen={isOpen}
                            onClose={() => {setIsOpen(false);} }
                            position={{x:0,y:0}}
+                           buttonRef={buttonRef}
                            options={[
                                {text: "Edit", className: "", onClick: ()=>{
                                    setIsOpenEdit(prev => !prev);

@@ -9,7 +9,7 @@ type EditPopUpItemProps = {
     children?: React.ReactNode;
 };
 
-const EditPopUpItem = ({ label, inputType, value, onChange, className, children}: EditPopUpItemProps) => {
+const FormPopUpItem = ({ label, inputType, value, onChange, className, children}: EditPopUpItemProps) => {
     
     if(children) return <>{children}</>
 
@@ -25,4 +25,4 @@ const EditPopUpItem = ({ label, inputType, value, onChange, className, children}
     );
 };
 
-export default EditPopUpItem;
+export default FormPopUpItem;

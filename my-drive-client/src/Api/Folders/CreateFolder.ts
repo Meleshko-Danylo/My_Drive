@@ -7,7 +7,7 @@ export const CreateFolder = async (folder: CreateFolderDto):Promise<Folder> => {
         const newFolder:CreateFolderDto = ({
             name: folder.name,
             path:folder.path+folder.name+"/",
-            isAccessible:false,
+            isAccessible: folder.isAccessible,
             parentFolderId:folder.parentFolderId
         })
         const response = await axiosInstance.post("/Folders/CreateFolder", newFolder);

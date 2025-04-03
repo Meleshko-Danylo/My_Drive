@@ -25,18 +25,18 @@ public class FoldersController: ControllerBase
     {
         var root = await _db.Folders
             .AsNoTracking()
-            .FirstOrDefaultAsync(f => f.Name == "Root");
+            .FirstOrDefaultAsync(f => f.Path == "/");
         if (root is null)
             return NotFound();
         
         var subfolders = await _db.Folders
             .AsNoTracking()
-            .Where(f => f.Path.StartsWith(root.Path) && !f.Path.Equals(root.Path))
+            .Where(f => f.ParentFolderId==root.Id)
             .ToListAsync();
         
         var files = await _db.Files
             .AsNoTracking()
-            .Where(f => f.Path.StartsWith(root.Path))
+            .Where(f => f.FolderId==root.Id)
             .ToListAsync();
         
         root.SubFolders = subfolders;
@@ -45,7 +45,7 @@ public class FoldersController: ControllerBase
         return Ok(root);
     }
     
-    [HttpGet("{path}")]
+    [HttpGet]
     public async Task<ActionResult<Folder>> GetFolder(string path)
     {
         var folder = await _db.Folders
@@ -56,12 +56,12 @@ public class FoldersController: ControllerBase
         
         var subfolders = await _db.Folders
             .AsNoTracking()
-            .Where(f => f.Path.StartsWith(folder.Path) && !f.Path.Equals(folder.Path))
+            .Where(f => f.ParentFolderId==folder.Id)
             .ToListAsync();
         
         var files = await _db.Files
             .AsNoTracking()
-            .Where(f => f.Path.StartsWith(folder.Path))
+            .Where(f => f.FolderId==folder.Id)
             .ToListAsync();
         
         folder.SubFolders = subfolders;
@@ -115,7 +115,7 @@ public class FoldersController: ControllerBase
         return Ok();
     }
     
-    [HttpDelete]
+    [HttpDelete("{folderId}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteFolder(Guid folderId)
     {
