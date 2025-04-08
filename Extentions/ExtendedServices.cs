@@ -12,6 +12,7 @@ public static class ExtendedServices
     public static IServiceCollection AddExtendedServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IFilesService, FilesService>();
+        services.AddScoped<IFolderService, FolderService>();
         services.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         

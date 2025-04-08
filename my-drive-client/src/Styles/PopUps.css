@@ -31,7 +31,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
     position: fixed;
     min-width: 100px;
-    max-width: 180px;
     padding: 5px 10px;
 }
 
@@ -48,6 +47,7 @@
     align-items: start;
     padding: 5px;
     gap: 12px;
+    max-width: 180px;
 }
 
 .edit-popup-item-input{
@@ -84,3 +84,7 @@
     cursor: pointer;
 }
 
+.public-access-url{
+    overflow-wrap: anywhere;
+    width: 100%;
+}

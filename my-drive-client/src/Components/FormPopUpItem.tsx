@@ -17,9 +17,18 @@ const FormPopUpItem = ({ label, inputType, value, onChange, className, children}
         <>
             <div>
                 <label htmlFor={label}>{label}</label>
-                <input type={inputType} className={className ? className : "edit-popup-item-input"}
-                       name={label} value={value || ""}
-                       onChange={(event)=> onChange(event)}/>
+                {inputType !== "checkbox" ? (
+                        <input type={inputType} className={className ? className : "edit-popup-item-input"}
+                               name={label} value={value || ""}
+                               onChange={(event)=> onChange(event)}/>
+                    )
+                    :
+                    (
+                        <input type={inputType} className={className ? className : "edit-popup-item-input"}
+                               name={label} value={value || ""}
+                               onChange={(event)=> onChange(event)} checked={value}/>
+                    )
+                }
             </div>
         </>
     );

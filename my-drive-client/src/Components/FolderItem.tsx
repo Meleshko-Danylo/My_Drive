@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {Folder} from "../Core/Folder";
 import PopUpMenu from "./PopUpMenu";
 import {DeleteFolderAsync} from "../Api/Folders/DeleteFolderAsync";
+import {downloadFolderAsync} from "../Api/Folders/DownloadFolderAsync";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 type FolderProps = {
@@ -30,9 +31,8 @@ const FolderItem = ({data, setIsOpenEdit, setFolderEditForm, onNavigate}: Folder
     return (
         <div
             className="folderManager-item"
-            onDoubleClick={handleDoubleClick}
         >
-            <div>
+            <div onDoubleClick={handleDoubleClick}>
                 <span className="folder-icon">📁</span> {data.name}
             </div>
             <div>
@@ -53,6 +53,14 @@ const FolderItem = ({data, setIsOpenEdit, setFolderEditForm, onNavigate}: Folder
                                        path: data.path,
                                        isAccessible: data.isAccessible
                                    });
+                               }},
+                               {text: "Download", className: "", onClick: async ()=>{
+                                   try {
+                                       await downloadFolderAsync(data.id, data.name);
+                                   } catch (error) {
+                                       console.error('Download failed:', error);
+                                       alert('Failed to download folder. Please try again.');
+                                   }
                                }},
                                {text: "Delete", className: "", onClick: async ()=>{await deleteFolderAsync(data.id)}}
                            ]}

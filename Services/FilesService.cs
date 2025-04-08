@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyDrive.Data;
 using MyDrive.DTO.File;
@@ -8,9 +9,9 @@ namespace MyDrive.Services;
 
 public class FilesService: IFilesService
 {
-    public readonly AppDbContext _db;
-    public readonly IWebHostEnvironment _env;
-    public readonly ILogger<FilesService> _logger;
+    private readonly AppDbContext _db;
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<FilesService> _logger;
 
     public FilesService(AppDbContext db, IWebHostEnvironment env, ILogger<FilesService> logger)
     {
@@ -25,6 +26,9 @@ public class FilesService: IFilesService
         if(folderExists is null)
             throw new Exception("Folder does not exist");
         
+        var filesDirectory = Path.Combine(_env.ContentRootPath, "Files");
+        if (!Directory.Exists(filesDirectory)) Directory.CreateDirectory(filesDirectory);
+        
         var newFileName = Guid.NewGuid() + "_" + fileRequest.File.Name;
         var filePath = Path.Combine(_env.ContentRootPath, "Files", newFileName);
         await using FileStream stream = new FileStream(filePath, FileMode.Create);
@@ -35,7 +39,7 @@ public class FilesService: IFilesService
             Name = fileRequest.File.FileName,
             Size = fileRequest.File.Length,
             ContentType = fileRequest.File.ContentType,
-            Path = fileRequest.FolderId + "/" + newFileName,
+            Path = folderExists.Path + fileRequest.File.FileName,
             CreatedAt = DateTime.UtcNow,
             StoragePath = filePath,
             FolderId = fileRequest.FolderId,
@@ -86,7 +90,7 @@ public class FilesService: IFilesService
         var file = await _db.Files.FindAsync(fileId);
         if (file is null)
             throw new FileNotFoundException($"File with '{fileId}' id not found");
-        var stream = new FileStream(file.StoragePath, FileMode.Open, FileAccess.Read); 
+        await using var stream = new FileStream(file.StoragePath, FileMode.Open, FileAccess.Read); 
         return contriller.File(stream, file.ContentType, file.Name);
     }
     
@@ -98,6 +102,22 @@ public class FilesService: IFilesService
 
         return MapToResponseDto(fileInfo);
     }
+
+    public async Task<string> GetContentOfTextFileAsync(Guid fileId)
+    {
+        var file = await _db.Files.FindAsync(fileId);
+        if (file is null || !File.Exists(file.StoragePath))
+            throw new FileNotFoundException($"File with '{fileId}' id not found");
+        if (!file.ContentType.StartsWith("text"))
+            throw new ArgumentException("This file cannot be opened as text");
+
+        // var content = await File.ReadAllTextAsync(file.StoragePath);
+        string content;
+        using (var reader = new StreamReader(file.StoragePath, Encoding.UTF8)){
+            content = await reader.ReadToEndAsync();
+        }
+        return content;
+    } 
     
     public async Task<FileResponseDto> UpdateFileInfoAsync(UpdateFileDto update)
     {

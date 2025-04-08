@@ -12,6 +12,7 @@ export const useFiles = () => {
         createdAt: new Date(),
         isAccessible: false,
         contentType: "",
+        folderId: ""
     });
     const [file, setFile] = useState<File | null>(null);
     

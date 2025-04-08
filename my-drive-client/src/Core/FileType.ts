@@ -5,5 +5,6 @@
     size: number,
     createdAt: Date,
     isAccessible: boolean,
-    contentType: string
+    contentType: string,
+    folderId: string
 };

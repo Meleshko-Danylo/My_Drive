@@ -15,9 +15,9 @@ public class FilesController: ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly UserManager<AppUser> _userManager;
-    private readonly FilesService _filesService;
+    private readonly IFilesService _filesService;
 
-    public FilesController(AppDbContext db, UserManager<AppUser> userManager, FilesService filesService)
+    public FilesController(AppDbContext db, UserManager<AppUser> userManager, IFilesService filesService)
     {
         _db = db;
         _userManager = userManager;

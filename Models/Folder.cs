@@ -24,8 +24,8 @@ public class Folder
     
     public long Size { get; set; }
     public Guid? ParentFolderId { get; set; }
-    // [JsonIgnore]
-    // public Folder? ParentFolder { get; set; }
+    [JsonIgnore]
+    public Folder? ParentFolder { get; set; }
     public List<Folder> SubFolders { get; set; } = new();
     public List<FileType> Files { get; set; } = new();
 }

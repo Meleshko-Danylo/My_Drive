@@ -1,16 +1,16 @@
 import {axiosInstance} from "../../index";
 
-export const downloadFileAsync = async (fileId: string, fileName?: string) => {
+export const downloadFolderAsync = async (folderId: string, folderName?: string) => {
     try {
-        const response = await axiosInstance.get(`/Files/DownloadFile/${fileId}`, {
+        const response = await axiosInstance.get(`/Folders/DownloadFolder/${folderId}`, {
             responseType: 'blob'
         });
-
-        const blob = new Blob([response.data], {
-            type: response.headers['content-type']
-        });
         
-        const downloadFileName = fileName || 'download';
+        const blob = new Blob([response.data], { 
+            type: 'application/zip' 
+        });
+
+        const downloadFileName = `${folderName || 'folder'}.zip`;
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -20,11 +20,11 @@ export const downloadFileAsync = async (fileId: string, fileName?: string) => {
 
         window.URL.revokeObjectURL(url);
         document.body.removeChild(link);
-
+        
         return response.data;
     }
     catch(err) {
-        console.error('Error downloading file:', err);
+        console.error('Error downloading folder:', err);
         throw err;
     }
 }

@@ -35,5 +35,6 @@ public class FileType
     
     [Required]
     public required Guid FolderId { get; set; }
+    [JsonIgnore]
     public Folder? Folder { get; set; }
 }

@@ -1,18 +1,12 @@
 ﻿import React from 'react';
+import {useSelectedFileContext} from "../Pages/App";
 
 const FilesDisplayContainer = () => {
+    const {selectedFile, fileDisplayContainerRef, setSelectedFile} = useSelectedFileContext();
+    
     return (
-        <div className="files-representation-container">
-            <div className="toolsBar">
-                <span></span>
-                <div className="toolsBar-buttons">
-                    <button className="addFolder"></button>
-                    <button className="uploadFile"></button>
-                </div>
-            </div>
-            <div className="representation-wrapper">
-
-            </div>
+        <div ref={fileDisplayContainerRef} className="files-representation-container">
+            
         </div>
     );
 };

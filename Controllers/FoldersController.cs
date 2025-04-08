@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MyDrive.Data;
 using MyDrive.DTO.Folder;
 using MyDrive.Models;
+using MyDrive.Services;
 
 namespace MyDrive.Controllers;
 
@@ -13,10 +14,12 @@ namespace MyDrive.Controllers;
 public class FoldersController: ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IFolderService _folderService;
 
-    public FoldersController(AppDbContext db)
+    public FoldersController(AppDbContext db, IFolderService folderService)
     {
         _db = db;
+        _folderService = folderService;
     }
     
     [HttpGet]
@@ -25,22 +28,11 @@ public class FoldersController: ControllerBase
     {
         var root = await _db.Folders
             .AsNoTracking()
+            .Include(f=>f.SubFolders)
+            .Include(f=>f.Files)
             .FirstOrDefaultAsync(f => f.Path == "/");
         if (root is null)
             return NotFound();
-        
-        var subfolders = await _db.Folders
-            .AsNoTracking()
-            .Where(f => f.ParentFolderId==root.Id)
-            .ToListAsync();
-        
-        var files = await _db.Files
-            .AsNoTracking()
-            .Where(f => f.FolderId==root.Id)
-            .ToListAsync();
-        
-        root.SubFolders = subfolders;
-        root.Files = files;
         
         return Ok(root);
     }
@@ -50,22 +42,11 @@ public class FoldersController: ControllerBase
     {
         var folder = await _db.Folders
             .AsNoTracking()
+            .Include(f=>f.SubFolders)
+            .Include(f=>f.Files)
             .FirstOrDefaultAsync(f => f.Path == path);
         if (folder is null)
             return NotFound();
-        
-        var subfolders = await _db.Folders
-            .AsNoTracking()
-            .Where(f => f.ParentFolderId==folder.Id)
-            .ToListAsync();
-        
-        var files = await _db.Files
-            .AsNoTracking()
-            .Where(f => f.FolderId==folder.Id)
-            .ToListAsync();
-        
-        folder.SubFolders = subfolders;
-        folder.Files = files;
 
         return Ok(folder);
     }
@@ -125,5 +106,22 @@ public class FoldersController: ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok();
+    }
+    
+    [HttpGet("{folderId:guid}")]
+    public async Task<IActionResult> DownloadFolder(Guid folderId)
+    {
+        try
+        {
+            return await _folderService.DownloadFolderAsZip(folderId, this);
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

@@ -1,4 +1,4 @@
-.path-navigation {
+﻿.path-navigation {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -41,4 +41,42 @@
 
 .folderManager-item {
     cursor: pointer;
+}
+
+.folderManager-item {
+    cursor: pointer;
+}
+
+/* File upload form styles */
+.file-upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    width: 95%;
+}
+
+.selected-file-info {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.selected-file-info p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+/* Make the file input more user-friendly */
+input[type="file"] {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Style for the checkbox container */
+.edit-popup-item-input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2);
 }
