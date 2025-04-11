@@ -90,7 +90,8 @@ public class FilesService: IFilesService
         var file = await _db.Files.FindAsync(fileId);
         if (file is null)
             throw new FileNotFoundException($"File with '{fileId}' id not found");
-        await using var stream = new FileStream(file.StoragePath, FileMode.Open, FileAccess.Read); 
+        // await using var stream = new FileStream(file.StoragePath, FileMode.Open, FileAccess.Read); 
+        var stream = new FileStream(file.StoragePath, FileMode.Open, FileAccess.Read);
         return contriller.File(stream, file.ContentType, file.Name);
     }
     
@@ -170,4 +171,5 @@ public interface IFilesService {
     Task<FileStreamResult> DownloadFileAsync(Guid fileId, ControllerBase controllerBase);
     Task<FileResponseDto> GetFileInfoAsync(Guid fileId);
     Task<FileResponseDto> UpdateFileInfoAsync(UpdateFileDto update);
+    Task<string> GetContentOfTextFileAsync(Guid fileId);
 }

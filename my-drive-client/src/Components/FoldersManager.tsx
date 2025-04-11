@@ -16,7 +16,7 @@ import {FileType} from "../Core/FileType";
 const FoldersManager = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const {selectedFile, fileDisplayContainerRef, setSelectedFile} = useSelectedFileContext();
+    const {selectedFile, setSelectedFile} = useSelectedFileContext();
 
     const getPathFromUrl = (): string => {
         const match = location.pathname.match(/^\/App\/(.*)/);

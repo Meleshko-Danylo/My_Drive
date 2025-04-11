@@ -97,4 +97,19 @@ public class FilesController: ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpGet("{fileId:guid}")]
+    public async Task<IActionResult> GetFileContent(Guid fileId, string contentType) {
+        if (contentType.StartsWith("text")) {
+            try {
+                return Ok(await _filesService.GetContentOfTextFileAsync(fileId));
+            }
+            catch (Exception e) {
+                if(e is FileNotFoundException) return NotFound();
+                return BadRequest(e.Message);
+            }
+        }
+
+        return BadRequest();
+    }
 }

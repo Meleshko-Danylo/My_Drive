@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <Folder Include="my-drive-client\public\images\" />
+      <Folder Include="my-drive-client\src\Api\Auth\" />
     </ItemGroup>
 
     <ItemGroup>

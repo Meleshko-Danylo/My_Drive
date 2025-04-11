@@ -2,8 +2,10 @@ import React, {useState} from 'react';
 import axios from "axios";
 import {Link} from "react-router";
 import {axiosInstance} from "../index";
+import {useAuthContext} from "../ContextLib/AuthContext";
 
 const LogIn = () => {
+    const {login} = useAuthContext();
     const [form, setForm] = useState({
         email: "",
         password: "",
@@ -13,10 +15,7 @@ const LogIn = () => {
         e.preventDefault();
         try {
             if(form.email.includes("@") && form.password.length >= 8){
-                const response = await axiosInstance.post("/Auth/LogIn", form);
-                if(response.status === 200){
-                    window.location.assign("/App");
-                }
+                login(form);
             }
             else {
                 console.error("Please enter a valid email address or password");

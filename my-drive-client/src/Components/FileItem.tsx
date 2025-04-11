@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {FileType} from "../Core/FileType";
 import PopUpMenu from "./PopUpMenu";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -24,15 +24,29 @@ const FileItem = ({data, setIsOpenEdit, setFilerEditForm, onSelect}: FileProps) 
             await queryClient.invalidateQueries({queryKey:['/Folders/GetFolder']})
         }
     })
-    
+
     const handleDoubleClick = () => {
         if (data) onSelect(data);
+    }
+    
+    const getFileIconClass = (): string => {
+        if(data.contentType.startsWith("image")) {
+            return "file-icon-image"
+        } else if(data.contentType.startsWith("video")){
+            return "file-icon-video"
+        } else if(data.contentType.startsWith("audio")){
+            return "file-icon-audio"
+        } 
+        // else if(data.contentType.startsWith("text")){
+        //     return "file-icon-text"
+        // }
+        return "file-icon";
     }
     
     return (
         <div className="folderManager-item">
             <div onDoubleClick={handleDoubleClick}>
-                <span className="file-icon"></span>{data.name}
+                <span className={getFileIconClass()}></span>{data.name}
             </div>
             <div>
                 <button ref={buttonRef} className="popup-button" onClick={(e) => {
@@ -44,6 +58,9 @@ const FileItem = ({data, setIsOpenEdit, setFilerEditForm, onSelect}: FileProps) 
                            position={{x:100,y:0}}
                            buttonRef={buttonRef}
                            options={[
+                               {text: "Preview", className: "", onClick: ()=>{
+                                       onSelect(data);
+                                   }},
                                {text: "Edit", className: "", onClick: ()=>{
                                    setIsOpenEdit(prev => !prev);
                                    setFilerEditForm && setFilerEditForm({

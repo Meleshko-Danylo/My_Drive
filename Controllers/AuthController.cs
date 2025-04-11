@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyDrive.Data;
 using MyDrive.DTO.Auth;
@@ -83,11 +84,10 @@ public class AuthController: ControllerBase
             userName = user.UserName,
             email = user.Email,
             role = roles[0],
-            message = "Login successful"
         });
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
@@ -97,13 +97,9 @@ public class AuthController: ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        if (!User.Identity!.IsAuthenticated)
-        {
-            return Unauthorized(new { error = "Not authenticated" });
-        }
-
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -114,7 +110,7 @@ public class AuthController: ControllerBase
         return Ok(new {
             userName = user.UserName,
             email = user.Email,
-            roles = roles
+            role = roles[0]
         });
     }
 }

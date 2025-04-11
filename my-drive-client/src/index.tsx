@@ -8,6 +8,11 @@ import Register from "./Pages/Register";
 import LogIn from "./Pages/LogIn";
 import axios from "axios";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import Folder from "./Pages/Folder";
+import File from "./Pages/File";
+import AuthContext from "./ContextLib/AuthContext";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import Home from "./Pages/Home";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -22,13 +27,24 @@ const queryClient = new QueryClient();
 
 root.render(
     <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-            <Routes>
-                <Route path="/App/*" element={<App />} />
-                <Route path="/Register" element={<Register />} />
-                <Route path="/" element={<LogIn />} />
-            </Routes>
-        </QueryClientProvider>
+        <AuthContext>
+            <QueryClientProvider client={queryClient}>
+                <Routes>
+                    <Route path="/App/*" element={
+                        <ProtectedRoute isForAdminOnly={true}>
+                            <App />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/Register" element={<Register />} />
+                    <Route path="/" element={<LogIn />} />
+                    <Route path='/Folder/p/:folderId' element={<Folder />} />
+                    <Route path="/File/p/:fileId" element={<File />} />
+                    <Route path='/Home' element={<Home />}></Route>
+                    <Route path='*' element={<div style={{display: 'flex', justifyContent:'center', alignItems:'center', 
+                        height: '100vh', fontSize: '3rem', fontWeight: 'bold', width: '100%', color: '#fff'}}>404</div>} />
+                </Routes>
+            </QueryClientProvider>
+        </AuthContext>
     </BrowserRouter>
 );
 

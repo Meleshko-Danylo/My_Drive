@@ -3,12 +3,13 @@ import '../Styles/App.css';
 import FoldersManager from "../Components/FoldersManager";
 import FilesDisplayContainer from "../Components/FilesDisplayContainer";
 import {FileType} from "../Core/FileType";
+import Header from "../Components/Header";
 
 
 type SelectedFileContextType = {
     selectedFile: FileType | null,
     setSelectedFile: React.Dispatch<React.SetStateAction<FileType | null>>,
-    fileDisplayContainerRef: any,
+    // fileDisplayContainerRef: any,
 };
 
 const SelectedFileContext = createContext<SelectedFileContextType | undefined>(undefined);
@@ -24,10 +25,11 @@ export const useSelectedFileContext = () =>{
 
 function App() {
     const [selectedFile, setSelectedFile] = useState<FileType | null>(null);
-    const fileDisplayContainerRef = useRef<HTMLDivElement>(null);
+    // const fileDisplayContainerRef = useRef<HTMLDivElement>(null);
     
     return (
-        <SelectedFileContext.Provider value={{ selectedFile, setSelectedFile, fileDisplayContainerRef }}>
+        <SelectedFileContext.Provider value={{ selectedFile, setSelectedFile}}>
+            <Header />
             <div className="App">
                 <FoldersManager />
                 <FilesDisplayContainer />
