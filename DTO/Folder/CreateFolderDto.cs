@@ -5,6 +5,7 @@ namespace MyDrive.DTO.Folder;
 
 public class CreateFolderDto
 {
+    public required string Id { get; set; }
     [StringLength(256, MinimumLength = 1)]
     [Required]
     public required string Name { get; set; }

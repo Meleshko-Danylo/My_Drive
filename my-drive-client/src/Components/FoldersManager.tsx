@@ -1,5 +1,5 @@
 import React, {useEffect, useState, KeyboardEvent} from 'react';
-import {useFetchData} from "../Hooks/useFetchData";
+import {useFetchFolder} from "../Hooks/useFetchFolder";
 import {Folder} from "../Core/Folder";
 import {CreateFolder} from "../Api/Folders/CreateFolder";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import {useLocation, useNavigate} from "react-router";
 import {uploadFileAsync} from "../Api/Files/UploadFileAsync";
 import {useSelectedFileContext} from "../Pages/App";
 import {FileType} from "../Core/FileType";
+import { v4 as uuidv4 } from 'uuid';
 
 const FoldersManager = () => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const FoldersManager = () => {
     const [pathInput, setPathInput] = useState('');
     const [isEditingPath, setIsEditingPath] = useState(false);
 
-    const {data, isLoading, error} = useFetchData<Folder>('/Folders/GetFolder', currentPath);
+    const {data, isLoading, error} = useFetchFolder<Folder>(currentPath, undefined);
     const queryClient = useQueryClient();
     
     useEffect(() => {
@@ -71,22 +72,10 @@ const FoldersManager = () => {
             });
         }
     })
-
-    const [isOpenFolderEdit, setIsOpenFolderEdit] = useState(false);
-    const [isOpenFileEdit, setIsOpenFileEdit] = useState(false);
+    
     const [isOpenFolderAdd, setIsOpenFolderAdd] = useState(false);
     const [isOpenFileUpload, setIsOpenFileUpload] = useState(false);
-
-    const [folderEditForm, setFolderEditForm] = useState({
-        name:'',
-        path:'',
-        isAccessible:data?.isAccessible || false,
-    });
-    const [fileEditForm, setFileEditForm] = useState({
-        name:'',
-        path:'',
-        isAccessible: data?.isAccessible || false,
-    });
+    
     const [folderAddForm, setFolderAddForm] = useState({
         name:'New Folder',
         isAccessible: data?.isAccessible || false
@@ -97,10 +86,8 @@ const FoldersManager = () => {
     });
 
     const [publicUrlInput, setPublicUrlInput] = useState({
-        folderEdit: `${window.origin}${location.pathname}${folderEditForm.name}`,
-        folderAdd: `${window.origin}${location.pathname}${folderAddForm.name}`,
-        fileUpload: `${window.origin}${location.pathname}${fileUploadForm.file?.name || ''}`,
-        fileEdit: `${window.origin}${location.pathname}${fileEditForm.name}`
+        folderAdd: `${window.origin}/Folder/p/${uuidv4()}`,
+        fileUpload: `${window.origin}/File/p/${uuidv4()}`,
     });
     
 
@@ -109,21 +96,21 @@ const FoldersManager = () => {
     
     const fileUploadFormChangeHandler = (event: any) => {
         const selectedFiles = event.target.files;
-        if(selectedFiles){
-            setFileUploadForm({...fileUploadForm, file:selectedFiles[0]})
-            setPublicUrlInput((prev)=>(
-                {...prev,fileUpload:`${window.origin}${location.pathname}${selectedFiles[0].name}`}
-            ))
-        }
+        if(selectedFiles) setFileUploadForm({...fileUploadForm, file:selectedFiles[0]})
     }
     
     const fileUploadSubmitHandler = async () => {
-        if(fileUploadForm.file !== null)
-            await uploadFile({
-                file: fileUploadForm.file,
-                folderId: data!.id,
-                isAccessible: fileUploadForm.isAccessible
-            });
+        if(!fileUploadForm.file){
+            alert('Please select a file to upload.');
+            return;
+        }
+
+        await uploadFile({
+            file: fileUploadForm.file,
+            folderId: data!.id,
+            fileId: getIdForPublicLink(PublicLinkKeys.fileUpload),
+            isAccessible: fileUploadForm.isAccessible
+        });
     }
     
     const selectedFileOnClickHandler = (file:FileType) =>{
@@ -132,11 +119,6 @@ const FoldersManager = () => {
     const navigateToFolder = (folderPath: string) => {
         setCurrentPath(folderPath);
     };
-    
-    const handleCopyClick = async (e: any, publicUrlInput:string) => {
-        e.preventDefault();
-        await navigator.clipboard.writeText(publicUrlInput);
-    }
     
     const handlePathInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPathInput(e.target.value);
@@ -161,6 +143,29 @@ const FoldersManager = () => {
             setCurrentPath(parentPath);
         }
     };
+
+    const handleCopyClick = async (e: any, publicUrlInput:string) => {
+        e.preventDefault();
+        await navigator.clipboard.writeText(publicUrlInput);
+    }
+    
+    const getIdForPublicLink = (inputName: string)=> {
+        let parts = [];
+        switch (inputName){
+            case 'folderAdd':
+                parts = publicUrlInput.folderAdd.split('/');
+                return parts[parts.length - 1];
+            case 'fileUpload':
+                parts = publicUrlInput.fileUpload.split('/');
+                return parts[parts.length - 1];
+        }
+        return '';
+    }
+    
+    enum PublicLinkKeys{
+        folderAdd='folderAdd',
+        fileUpload='fileUpload',
+    }
 
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>{error.message}</p>;
@@ -209,9 +214,8 @@ const FoldersManager = () => {
                             <div key={folder.id} style={{width:'100%'}} >
                                 <FolderItem
                                     data={folder}
-                                    setIsOpenEdit={setIsOpenFolderEdit}
-                                    setFolderEditForm={setFolderEditForm}
                                     onNavigate={navigateToFolder}
+                                    onSubmitFolderEdit={()=>{}}
                                 />
                             </div>
                         );
@@ -219,71 +223,20 @@ const FoldersManager = () => {
                     {data?.files.map((file:any, index:number)=>{
                         return(
                             <div key={index} style={{width:'100%'}}>
-                                <FileItem data={file} setIsOpenEdit={setIsOpenFileEdit} 
+                                <FileItem data={file}
                                           onSelect={selectedFileOnClickHandler}
-                                          setFilerEditForm={setFileEditForm}/>
+                                          onSubmitFileEdit={()=>{}}
+                                />
                             </div>
                         )
                     })}
                 </div>
             </div>
-            
-            <FormPopUp title={'Edit file'} isOpen={isOpenFileEdit} onClose={()=>{setIsOpenFileEdit(prev => !prev)}} onSubmit={()=>{}}>
-                
-                <FormPopUpItem label={'Name'} value={fileEditForm.name} className={''}
-                               onChange={(e) => {
-                                   setFileEditForm((prev) =>
-                                   ({...prev, name:e.target.value}))
-                                   setPublicUrlInput((prev)=>(
-                                       {...prev,fileEdit:`${window.origin}${location.pathname}${e.target.value}`}
-                                   ))
-                               }}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Folder'} value={fileEditForm.path} className={''}
-                               onChange={(e) => {setFileEditForm((prev) =>
-                                   ({...prev, path:e.target.value}))}}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Public'} value={fileEditForm.isAccessible} className={''}
-                               onChange={(e) => {setFileEditForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
-                               inputType={'checkbox'} />
-                {fileEditForm.isAccessible && (
-                    <>
-                        <input type="text" value={publicUrlInput.fileEdit}/>
-                        <button onClick={(e) => handleCopyClick(e, publicUrlInput.fileEdit)} >Copy</button>
-                    </>
-                )}
-            </FormPopUp>
-            
-            <FormPopUp title={'Edit folder'} isOpen={isOpenFolderEdit} onClose={()=>{setIsOpenFolderEdit(prev => !prev)}} onSubmit={()=>{}}>
-                <FormPopUpItem label={'Name'} value={folderEditForm.name} className={''}
-                               onChange={(e) => {
-                                   setFolderEditForm((prev) =>
-                                   ({...prev, name:e.target.value}))
-                                   setPublicUrlInput((prev)=>(
-                                       {...prev,folderEdit:`${window.origin}${location.pathname}${e.target.value}`}
-                                   ))
-                               }}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Folder'} value={folderEditForm.path} className={''}
-                               onChange={(e) => {setFolderEditForm((prev) =>
-                                   ({...prev, path:e.target.value}))}}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Public'} value={folderEditForm.isAccessible} className={''}
-                               onChange={(e) => {setFolderEditForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
-                               inputType={'checkbox'}/>
-                {folderEditForm.isAccessible && (
-                    <>
-                        <input type="text" value={publicUrlInput.folderEdit}/>
-                        <button onClick={(e) => handleCopyClick(e, publicUrlInput.folderEdit)} >Copy</button>
-                    </>
-                )}
-            </FormPopUp>
 
             <FormPopUp title={'Add folder'} isOpen={isOpenFolderAdd} onClose={()=>{setIsOpenFolderAdd(prev => !prev)}}
                        buttonRef={addFolderButtonRef} onSubmit={async ()=>{await createFolder(
                            {
+                               id: getIdForPublicLink(PublicLinkKeys.folderAdd),
                                name:folderAddForm.name,
                                parentFolderId: data ? data.id : '',
                                path: data ? data.path : '/',
@@ -294,13 +247,15 @@ const FoldersManager = () => {
                                onChange={(e) => {
                                    setFolderAddForm((prev) =>
                                    ({...prev, name:e.target.value}))
-                                   setPublicUrlInput((prev)=>(
-                                       {...prev,folderAdd:`${window.origin}${location.pathname}${e.target.value}`}
-                                   ))}}
+                                   }}
                                inputType={'text'}/>
                 <FormPopUpItem label={'Public'} value={folderAddForm.isAccessible} className={''}
                                onChange={(e) => {setFolderAddForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
+                                   ({...prev, isAccessible:e.target.checked})))
+                                   setPublicUrlInput((prev)=>(
+                                       {...prev,folderAdd:`${window.origin}/Folder/p/${uuidv4()}`}
+                                   ))
+                               }}
                                inputType={'checkbox'}/>
                 {folderAddForm.isAccessible && (
                     <>
@@ -309,8 +264,8 @@ const FoldersManager = () => {
                     </>
                 )}
             </FormPopUp>
-
-            <FormPopUp title={'Upload file'} isOpen={isOpenFileUpload} 
+            
+            <FormPopUp title={'Upload file'} isOpen={isOpenFileUpload}
                        onClose={()=>{
                            setIsOpenFileUpload(prev => !prev);
                            setFileUploadForm({
@@ -319,12 +274,8 @@ const FoldersManager = () => {
                            });
                        }}
                        buttonRef={uploadFileButtonRef} onSubmit={async ()=>{
-                           if(!fileUploadForm.file){
-                               alert('Please select a file to upload.');
-                               return;
-                           }
-                           await fileUploadSubmitHandler();
-                       }}>
+                await fileUploadSubmitHandler();
+            }}>
                 <div className="file-upload-form">
                     <FormPopUpItem label={'Select File'} className={''}
                                    onChange={(e) => {fileUploadFormChangeHandler(e)}}
@@ -339,7 +290,11 @@ const FoldersManager = () => {
                 </div>
                 <FormPopUpItem label={'Public'} value={fileUploadForm.isAccessible} className={''}
                                onChange={(e) => {setFileUploadForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
+                                   ({...prev, isAccessible:e.target.checked})))
+                                   setPublicUrlInput((prev)=>(
+                                       {...prev,fileUpload:`${window.origin}/File/p/${uuidv4()}`}
+                                   ))
+                               }}
                                inputType={'checkbox'}/>
                 {fileUploadForm.isAccessible && (
                     <>

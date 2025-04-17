@@ -1,8 +1,8 @@
 ﻿import {axiosInstance} from "../index";
 
-export async function FetchData<T = any>(apiUrl:string, setValue?: (value:T)=>void, params:string='/') {
+export async function FetchFolder<T = any>(path:string='/', setValue?: (value:T)=>void) {
     try {
-        let response = await axiosInstance.get<T>(apiUrl + `?path=${params}`);
+        let response = await axiosInstance.get<T>(`/Folders/GetFolder?path=${path}`);
         if(setValue) setValue(response.data);
         return response.data;
     }

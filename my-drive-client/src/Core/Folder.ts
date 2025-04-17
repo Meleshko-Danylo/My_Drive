@@ -11,6 +11,7 @@ export type Folder = {
 };
 
 export type CreateFolderDto = {
+    id: string,
     name: string,
     path: string,
     isAccessible: boolean,

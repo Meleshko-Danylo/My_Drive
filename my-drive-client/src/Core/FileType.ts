@@ -8,3 +8,10 @@
     contentType: string,
     folderId: string
 };
+
+export type UploadFileDto = {
+    file: File,
+    fileId: string
+    folderId: string
+    isAccessible: boolean
+}

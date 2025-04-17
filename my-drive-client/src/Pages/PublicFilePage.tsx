@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 
-const Folder = () => {
+const PublicFilePage = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const Folder = () => {
     );
 };
 
-export default Folder;
+export default PublicFilePage;

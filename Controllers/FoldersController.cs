@@ -51,6 +51,22 @@ public class FoldersController: ControllerBase
         return Ok(folder);
     }
     
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Folder>> GetFolderById(string id)
+    {
+        var folder = await _db.Folders
+            .AsNoTracking()
+            .Include(f=>f.SubFolders)
+            .Include(f=>f.Files)
+            .FirstOrDefaultAsync(f => f.Id == Guid.Parse(id));
+        if(folder is null)
+            return NotFound();
+        if (!folder.IsAccessible)
+            return Forbid();
+
+        return Ok(folder);
+    }
+    
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateFolder(CreateFolderDto folder)
@@ -59,7 +75,7 @@ public class FoldersController: ControllerBase
         
         var newFolder = new Folder()
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse(folder.Id),
             Name = folder.Name,
             Path = folder.Path,
             IsAccessible = folder.IsAccessible,

@@ -48,6 +48,17 @@ public class FilesController: ControllerBase
         }
     }
 
+    [HttpGet("{fileId:guid}")]
+    public async Task<IActionResult> GetFileStream(Guid fileId)
+    {
+        try {
+            return await _filesService.DownloadFileAsync(fileId, this);
+        }
+        catch (Exception e) {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UploadFile([FromForm] FileUploadDto file)

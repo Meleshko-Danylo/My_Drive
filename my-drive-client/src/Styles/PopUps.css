@@ -173,11 +173,9 @@
 }
 
 .file-preview-content{
+    display: flex;
+    justify-content: center;
     padding: 16px;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    font-size: 14px;
-    font-family: monospace;
 }
 
 .file-preview-loading{
@@ -195,4 +193,18 @@
     border-radius: 4px;
     background-color: #ffebee;
     margin: 16px 0;
+}
+
+.file-preview-text{
+    width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.file-preview-image{
+
+    max-width: 500px;
+    max-height: 500px;
 }

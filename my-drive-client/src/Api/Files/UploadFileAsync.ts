@@ -1,15 +1,12 @@
 ﻿import {axiosInstance} from "../../index";
+import {UploadFileDto} from "../../Core/FileType";
 
-export type UploadFileDto = {
-	file: File,
-	folderId: string
-	isAccessible: boolean
-}
 
-export const uploadFileAsync = async ({file, folderId, isAccessible}: UploadFileDto) => {
+export const uploadFileAsync = async ({file, folderId, isAccessible, fileId}: UploadFileDto) => {
 	try {
 		const formData = new FormData();
 		formData.append("file", file);
+		formData.append("fileId", fileId);
 		formData.append("folderId", folderId);
 		formData.append("isAccessible", String(isAccessible));
 		

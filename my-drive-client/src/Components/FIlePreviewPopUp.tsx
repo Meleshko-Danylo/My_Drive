@@ -2,6 +2,7 @@
 import {FileType} from "../Core/FileType";
 import {GetFileContentAsync} from "../Api/Files/GetFileContentAsync";
 import {downloadFileAsync} from "../Api/Files/DownloadFileAsync";
+import {getFileBlobAsync} from "../Api/Files/GetFileStreamAsync";
 
 type FIlePreviewPopUpProps = {
     file: FileType | null;
@@ -21,7 +22,6 @@ const FIlePreviewPopUp = ({file, onClose, onOpenInNewTabClick}: FIlePreviewPopUp
                 onClose();
             }
         }
-        
         document.addEventListener('mousedown', handleOuterClick);
         return () => document.removeEventListener('mousedown', handleOuterClick);
     }, [onClose]);
@@ -29,11 +29,30 @@ const FIlePreviewPopUp = ({file, onClose, onOpenInNewTabClick}: FIlePreviewPopUp
     useEffect(() => {
         const fetchFileContent = async () => {
             if(!file) return;
+            setLoading(true);
+            setError(null);
+            
             try {
                 if(file.contentType.startsWith('text')){
-                    setLoading(true);
-                    setError(null);
                     setContent(await GetFileContentAsync(file));
+                }
+                if(file.contentType.startsWith("image")){
+                    const {url} = await getFileBlobAsync(file.id);
+                    setContent(url);
+                    setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+                }
+                if(file.contentType === 'application/pdf'){
+                    const {url} = await getFileBlobAsync(file.id);
+                    const newWindow = window.open(url, '_blank');
+                    if(newWindow){
+                        newWindow.onbeforeunload = () => {
+                            URL.revokeObjectURL(url);
+                        }
+                    }
+                    else {
+                        setContent(url);
+                        setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+                    }
                 }
             }
             catch (err){
@@ -69,7 +88,15 @@ const FIlePreviewPopUp = ({file, onClose, onOpenInNewTabClick}: FIlePreviewPopUp
                     {!loading ?
                         error ?
                             <div className="file-preview-error">{error}</div> :
-                            <pre><code>{content}</code></pre> :
+                            (
+                                file.contentType.startsWith('text') &&
+                                (<pre className="file-preview-text">{content}</pre>)
+                                || file.contentType.startsWith('image') &&
+                                (<img src={content} alt={`${file.name}`} className="file-preview-image"/>)
+                                || file.contentType === 'application/pdf' &&
+                                (<iframe src={content} title={`PDF preview of ${file.name}`}
+                                         className="file-preview-pdf"/>)
+                            ) :
                         <div className="file-preview-loading">Loading...</div>}
                 </div>
             </div>

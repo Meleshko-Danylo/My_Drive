@@ -36,6 +36,7 @@ public class FilesService: IFilesService
 
         var uploadedFile = new FileType
         {
+            Id = Guid.Parse(fileRequest.FileId),
             Name = fileRequest.File.FileName,
             Size = fileRequest.File.Length,
             ContentType = fileRequest.File.ContentType,
@@ -103,7 +104,7 @@ public class FilesService: IFilesService
 
         return MapToResponseDto(fileInfo);
     }
-
+    
     public async Task<string> GetContentOfTextFileAsync(Guid fileId)
     {
         var file = await _db.Files.FindAsync(fileId);
@@ -148,6 +149,8 @@ public class FilesService: IFilesService
         _logger.LogInformation($"File {file.Name} was successfully updated");
         return MapToResponseDto(file);
     }
+    
+    
     
     private static FileResponseDto MapToResponseDto(FileType file){
         return new FileResponseDto

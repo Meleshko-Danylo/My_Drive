@@ -5,6 +5,7 @@ import {axiosInstance} from "../../index";
 export const CreateFolder = async (folder: CreateFolderDto):Promise<Folder> => {
     try {
         const newFolder:CreateFolderDto = ({
+            id: folder.id,
             name: folder.name,
             path:folder.path+folder.name+"/",
             isAccessible: folder.isAccessible,
