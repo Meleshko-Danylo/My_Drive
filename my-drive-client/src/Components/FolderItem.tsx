@@ -10,11 +10,13 @@ import {v4 as uuidv4} from "uuid";
 
 type FolderProps = {
     data: Folder;
-    onNavigate: (path: string) => void;
+    isPublic:boolean;
+    onNavigate: (path: any) => void;
     onSubmitFolderEdit?: () => void;
+    onDoubleClick?: () => void;
 };
 
-const FolderItem = ({data, onNavigate, onSubmitFolderEdit}: FolderProps) => {
+const FolderItem = ({data, onNavigate, onSubmitFolderEdit, onDoubleClick, isPublic}: FolderProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [folderEditForm, setFolderEditForm] = useState({
@@ -39,7 +41,8 @@ const FolderItem = ({data, onNavigate, onSubmitFolderEdit}: FolderProps) => {
     }
     
     const handleDoubleClick = () => {
-        onNavigate(data.path);
+        if(onDoubleClick) onDoubleClick();
+        else onNavigate(data.path);
     };
 
     return (
@@ -55,56 +58,77 @@ const FolderItem = ({data, onNavigate, onSubmitFolderEdit}: FolderProps) => {
                         e.stopPropagation(); // Prevent triggering double-click
                         setIsOpen((prev) => !prev);
                     }}>:</button>
-                    <PopUpMenu isOpen={isOpen}
-                               onClose={() => {setIsOpen(false)}}
-                               position={{x:101,y:0}}
-                               buttonRef={buttonRef}
-                               options={[
-                                   {text: "Open", className: "", onClick: () => onNavigate(data.path)},
-                                   {text: "Edit", className: "", onClick: ()=>{
-                                           setIsOpenFolderEdit(prev => !prev);
-                                           setFolderEditForm && setFolderEditForm({
-                                               name: data.name,
-                                               path: data.path,
-                                               isAccessible: data.isAccessible
-                                           });
-                                       }},
-                                   {text: "Download", className: "", onClick: async ()=>{
-                                           try {
-                                               await downloadFolderAsync(data.id, data.name);
-                                           } catch (error) {
-                                               console.error('Download failed:', error);
-                                               alert('Failed to download folder. Please try again.');
-                                           }
-                                       }},
-                                   {text: "Delete", className: "", onClick: async ()=>{await deleteFolderAsync(data.id)}}
-                               ]}
-                    />
+                    {!isPublic ? (
+                        <PopUpMenu isOpen={isOpen}
+                                   onClose={() => {setIsOpen(false)}}
+                                   position={{x:101,y:0}}
+                                   buttonRef={buttonRef}
+                                   options={[
+                                       {text: "Open", className: "", onClick: () => onNavigate(data.path)},
+                                       {text: "Edit", className: "", onClick: ()=>{
+                                               setIsOpenFolderEdit(prev => !prev);
+                                               setFolderEditForm && setFolderEditForm({
+                                                   name: data.name,
+                                                   path: data.path,
+                                                   isAccessible: data.isAccessible
+                                               });
+                                           }},
+                                       {text: "Download", className: "", onClick: async ()=>{
+                                               try {
+                                                   await downloadFolderAsync(data.id, data.name);
+                                               } catch (error) {
+                                                   console.error('Download failed:', error);
+                                                   alert('Failed to download folder. Please try again.');
+                                               }
+                                           }},
+                                       {text: "Delete", className: "", onClick: async ()=>{await deleteFolderAsync(data.id)}}
+                                   ]}
+                        />
+                    ) : (
+                        <PopUpMenu isOpen={isOpen}
+                                   onClose={() => {setIsOpen(false)}}
+                                   position={{x:101,y:0}}
+                                   buttonRef={buttonRef}
+                                   options={[
+                                       {text: "Open", className: "", onClick: () => onNavigate(data.path)},
+                                       {text: "Download", className: "", onClick: async ()=>{
+                                               try {
+                                                   await downloadFolderAsync(data.id, data.name);
+                                               } catch (error) {
+                                                   console.error('Download failed:', error);
+                                                   alert('Failed to download folder. Please try again.');
+                                               }
+                                           }}
+                                   ]}
+                        />
+                    )}
                 </div>
             </div>
-            <FormPopUp title={'Edit folder'} buttonRef={buttonRef} isOpen={isOpenFolderEdit} 
-                       onClose={()=>{setIsOpenFolderEdit(prev => !prev)}} onSubmit={()=>{}}>
-                <FormPopUpItem label={'Name'} value={folderEditForm.name} className={''}
-                               onChange={(e) => {
-                                   setFolderEditForm((prev) =>
-                                       ({...prev, name:e.target.value}))
-                               }}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Folder'} value={folderEditForm.path} className={''}
-                               onChange={(e) => {setFolderEditForm((prev) =>
-                                   ({...prev, path:e.target.value}))}}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Public'} value={folderEditForm.isAccessible} className={''}
-                               onChange={(e) => {setFolderEditForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
-                               inputType={'checkbox'}/>
-                {folderEditForm.isAccessible && (
-                    <>
-                        <input type="text" value={publicUrlInput}/>
-                        <button onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
-                    </>
-                )}
-            </FormPopUp>
+            {!isPublic && (
+                <FormPopUp title={'Edit folder'} buttonRef={buttonRef} isOpen={isOpenFolderEdit}
+                           onClose={()=>{setIsOpenFolderEdit(prev => !prev)}} onSubmit={()=>{}}>
+                    <FormPopUpItem label={'Name'} value={folderEditForm.name} className={''}
+                                   onChange={(e) => {
+                                       setFolderEditForm((prev) =>
+                                           ({...prev, name:e.target.value}))
+                                   }}
+                                   inputType={'text'}/>
+                    <FormPopUpItem label={'Folder'} value={folderEditForm.path} className={''}
+                                   onChange={(e) => {setFolderEditForm((prev) =>
+                                       ({...prev, path:e.target.value}))}}
+                                   inputType={'text'}/>
+                    <FormPopUpItem label={'Public'} value={folderEditForm.isAccessible} className={''}
+                                   onChange={(e) => {setFolderEditForm((prev =>
+                                       ({...prev, isAccessible:e.target.checked})))}}
+                                   inputType={'checkbox'}/>
+                    {folderEditForm.isAccessible && (
+                        <>
+                            <input type="text" value={publicUrlInput}/>
+                            <button onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
+                        </>
+                    )}
+                </FormPopUp>
+            )}
         </>
     );
 };

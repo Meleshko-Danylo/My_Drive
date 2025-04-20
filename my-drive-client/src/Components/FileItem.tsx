@@ -13,9 +13,10 @@ type FileProps = {
     data: FileType;
     onSelect: (file: FileType) => void;
     onSubmitFileEdit?: () => void;
+    isPublic: boolean;
 };
 
-const FileItem = ({data, onSelect, onSubmitFileEdit}: FileProps) => {
+const FileItem = ({data, onSelect, onSubmitFileEdit, isPublic}: FileProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [fileEditForm, setFileEditForm] = useState({
@@ -82,59 +83,82 @@ const FileItem = ({data, onSelect, onSubmitFileEdit}: FileProps) => {
                         e.stopPropagation();
                         setIsOpen(prev => !prev);
                     }}>:</button>
-                    <PopUpMenu isOpen={isOpen}
-                               onClose={() => {setIsOpen(false);} }
-                               position={{x:101,y:0}}
-                               buttonRef={buttonRef}
-                               options={[
-                                   {text: "Preview", className: "", onClick: ()=>{
-                                           onSelect(data);
-                                       }},
-                                   {text: "Edit", className: "", onClick: ()=>{
-                                           setIsOpenFileEdit(prev => !prev);
-                                           setFileEditForm({
-                                               name: data.name,
-                                               path: data.path,
-                                               isAccessible: data.isAccessible
-                                           });
-                                       }},
-                                   {text: "Download", className: "", onClick: async ()=>{
-                                           try {
-                                               await downloadFileAsync(data.id, data.name);
-                                           } catch (error) {
-                                               console.error('Download failed:', error);
-                                               alert('Failed to download file. Please try again.');
-                                           }
-                                       }},
-                                   {text: "Delete", className: "", onClick: async ()=>{await deleteFile(data.id)}}
-                               ]}
-                    />
+                    {!isPublic ? (
+                        <PopUpMenu isOpen={isOpen}
+                                   onClose={() => {setIsOpen(false);} }
+                                   position={{x:101,y:0}}
+                                   buttonRef={buttonRef}
+                                   options={[
+                                       {text: "Preview", className: "", onClick: ()=>{
+                                               onSelect(data);
+                                           }},
+                                       {text: "Edit", className: "", onClick: ()=>{
+                                               setIsOpenFileEdit(prev => !prev);
+                                               setFileEditForm({
+                                                   name: data.name,
+                                                   path: data.path,
+                                                   isAccessible: data.isAccessible
+                                               });
+                                           }},
+                                       {text: "Download", className: "", onClick: async ()=>{
+                                               try {
+                                                   await downloadFileAsync(data.id, data.name);
+                                               } catch (error) {
+                                                   console.error('Download failed:', error);
+                                                   alert('Failed to download file. Please try again.');
+                                               }
+                                           }},
+                                       {text: "Delete", className: "", onClick: async ()=>{await deleteFile(data.id)}}
+                                   ]}
+                        />
+                    ) : (
+                        <PopUpMenu isOpen={isOpen}
+                                   onClose={() => {setIsOpen(false);} }
+                                   position={{x:101,y:0}}
+                                   buttonRef={buttonRef}
+                                   options={[
+                                       {text: "Preview", className: "", onClick: ()=>{
+                                               onSelect(data);
+                                           }},
+                                       {text: "Download", className: "", onClick: async ()=>{
+                                               try {
+                                                   await downloadFileAsync(data.id, data.name);
+                                               } catch (error) {
+                                                   console.error('Download failed:', error);
+                                                   alert('Failed to download file. Please try again.');
+                                               }
+                                           }},
+                                   ]}
+                        />
+                    )}
                 </div>
             </div>
-            <FormPopUp title={'Edit file'} isOpen={isOpenFileEdit} buttonRef={buttonRef} 
-                       onClose={()=>{setIsOpenFileEdit(prev => !prev)}} onSubmit={()=>{}}>
+            {!isPublic && (
+                <FormPopUp title={'Edit file'} isOpen={isOpenFileEdit} buttonRef={buttonRef}
+                           onClose={()=>{setIsOpenFileEdit(prev => !prev)}} onSubmit={()=>{}}>
 
-                <FormPopUpItem label={'Name'} value={fileEditForm.name} className={''}
-                               onChange={(e) => {
-                                   setFileEditForm((prev) =>
-                                       ({...prev, name:e.target.value}))
-                               }}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Folder'} value={fileEditForm.path} className={''}
-                               onChange={(e) => {setFileEditForm((prev) =>
-                                   ({...prev, path:e.target.value}))}}
-                               inputType={'text'}/>
-                <FormPopUpItem label={'Public'} value={fileEditForm.isAccessible} className={''}
-                               onChange={(e) => {setFileEditForm((prev =>
-                                   ({...prev, isAccessible:e.target.checked})))}}
-                               inputType={'checkbox'} />
-                {fileEditForm.isAccessible && (
-                    <>
-                        <input type="text" value={publicUrlInput}/>
-                        <button onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
-                    </>
-                )}
-            </FormPopUp>
+                    <FormPopUpItem label={'Name'} value={fileEditForm.name} className={''}
+                                   onChange={(e) => {
+                                       setFileEditForm((prev) =>
+                                           ({...prev, name:e.target.value}))
+                                   }}
+                                   inputType={'text'}/>
+                    <FormPopUpItem label={'Folder'} value={fileEditForm.path} className={''}
+                                   onChange={(e) => {setFileEditForm((prev) =>
+                                       ({...prev, path:e.target.value}))}}
+                                   inputType={'text'}/>
+                    <FormPopUpItem label={'Public'} value={fileEditForm.isAccessible} className={''}
+                                   onChange={(e) => {setFileEditForm((prev =>
+                                       ({...prev, isAccessible:e.target.checked})))}}
+                                   inputType={'checkbox'} />
+                    {fileEditForm.isAccessible && (
+                        <>
+                            <input type="text" value={publicUrlInput}/>
+                            <button onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
+                        </>
+                    )}
+                </FormPopUp>
+            )}
         </>
     );
 };

@@ -36,6 +36,8 @@ const FoldersManager = () => {
         if(currentPath === '/') navigate('/App/');
         else {
             const urlPath = `/App/${currentPath.substring(1)}`;
+            console.log(currentPath);
+            console.log(urlPath);            
             if (urlPath !== location.pathname) navigate(urlPath);
         }
     }, [currentPath, navigate]);
@@ -213,6 +215,7 @@ const FoldersManager = () => {
                         return(
                             <div key={folder.id} style={{width:'100%'}} >
                                 <FolderItem
+                                    isPublic={false}
                                     data={folder}
                                     onNavigate={navigateToFolder}
                                     onSubmitFolderEdit={()=>{}}
@@ -224,6 +227,7 @@ const FoldersManager = () => {
                         return(
                             <div key={index} style={{width:'100%'}}>
                                 <FileItem data={file}
+                                          isPublic={false}
                                           onSelect={selectedFileOnClickHandler}
                                           onSubmitFileEdit={()=>{}}
                                 />

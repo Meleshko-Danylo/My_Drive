@@ -9,7 +9,6 @@ import Header from "../Components/Header";
 type SelectedFileContextType = {
     selectedFile: FileType | null,
     setSelectedFile: React.Dispatch<React.SetStateAction<FileType | null>>,
-    // fileDisplayContainerRef: any,
 };
 
 const SelectedFileContext = createContext<SelectedFileContextType | undefined>(undefined);
@@ -32,7 +31,7 @@ function App() {
             <Header />
             <div className="App">
                 <FoldersManager />
-                <FilesDisplayContainer />
+                <FilesDisplayContainer useSelectedFileContext={useSelectedFileContext}/>
             </div>
         </SelectedFileContext.Provider>
     );

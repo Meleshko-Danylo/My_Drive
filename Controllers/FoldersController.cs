@@ -38,6 +38,7 @@ public class FoldersController: ControllerBase
     }
     
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<Folder>> GetFolder(string path)
     {
         var folder = await _db.Folders
@@ -52,12 +53,13 @@ public class FoldersController: ControllerBase
     }
     
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<Folder>> GetFolderById(string id)
     {
         var folder = await _db.Folders
             .AsNoTracking()
-            .Include(f=>f.SubFolders)
-            .Include(f=>f.Files)
+            .Include(f => f.SubFolders)
+            .Include(f => f.Files)
             .FirstOrDefaultAsync(f => f.Id == Guid.Parse(id));
         if(folder is null)
             return NotFound();
@@ -125,6 +127,7 @@ public class FoldersController: ControllerBase
     }
     
     [HttpGet("{folderId:guid}")]
+    [Authorize]
     public async Task<IActionResult> DownloadFolder(Guid folderId)
     {
         try

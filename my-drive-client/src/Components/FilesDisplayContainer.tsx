@@ -1,10 +1,18 @@
 ﻿import React, {useEffect, useState} from 'react';
-import {useSelectedFileContext} from "../Pages/App";
 import {FileType} from "../Core/FileType";
 import FIlePreviewPopUp from "./FIlePreviewPopUp";
-import {openFileInNewTab} from "../Api/Files/OpenFileInNewTab"; 
+import {openFileInNewTab} from "../Api/Files/OpenFileInNewTab";
 
-const FilesDisplayContainer = () => {
+type SelectedFileContextType = {
+    selectedFile: FileType | null,
+    setSelectedFile: React.Dispatch<React.SetStateAction<FileType | null>>,
+};
+
+type FilesDisplayContainerType = {
+    useSelectedFileContext: () => SelectedFileContextType;
+}
+
+const FilesDisplayContainer = ({useSelectedFileContext}: FilesDisplayContainerType) => {
     const {selectedFile, setSelectedFile} = useSelectedFileContext();
     const [isOpen, setIsOpen] = useState(false);
 

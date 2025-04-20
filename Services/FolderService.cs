@@ -2,12 +2,14 @@ using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyDrive.Data;
+using MyDrive.Models;
 
 namespace MyDrive.Services
 {
     public interface IFolderService
     {
         Task<FileResult> DownloadFolderAsZip(Guid folderId, ControllerBase controller);
+        Task<Folder> GetFullFolder(Guid id);
     }
 
     public class FolderService : IFolderService
@@ -17,6 +19,40 @@ namespace MyDrive.Services
         public FolderService(AppDbContext db)
         {
             _db = db;
+        }
+        
+        public async Task<Folder> GetFullFolder(Guid id)
+        {
+            var folder = await _db.Folders
+                .AsNoTracking()
+                .Include(f => f.Files)
+                .Include(f => f.SubFolders)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (folder == null) return null;
+            await LoadSubfoldersRecursively(folder);
+            
+            return folder;
+        }
+        
+        private async Task LoadSubfoldersRecursively(Folder folder)
+        {
+            if (folder == null) return;
+            
+            var subfolders = await _db.Folders
+                .AsNoTracking()
+                .Include(f => f.Files)
+                .Include(f => f.SubFolders)
+                .Where(f => f.ParentFolderId == folder.Id)
+                .ToListAsync();
+            
+            if (subfolders.Count == 0) return;
+            
+            foreach (var subfolder in subfolders)
+            {
+                await LoadSubfoldersRecursively(subfolder);
+            }
+            folder.SubFolders = subfolders;
         }
         
         public async Task<FileResult> DownloadFolderAsZip(Guid folderId, ControllerBase controller)

@@ -1,11 +1,28 @@
-﻿import React from 'react';
+﻿import React, {useState} from 'react';
 import { useParams } from 'react-router';
 import {useFetchFolder} from "../Hooks/useFetchFolder";
 import {Folder} from "../Core/Folder";
 import Header from "../Components/Header";
 import PublicFoldersManager from "../Components/PublicFoldersManager";
+import FilesDisplayContainer from "../Components/FilesDisplayContainer";
+import {FileType} from "../Core/FileType";
+
+
+type SelectedFileContextType = {
+    selectedFile: FileType | null;
+    setSelectedFile: React.Dispatch<React.SetStateAction<FileType | null>>;
+};
+
+const SelectedFileContext = React.createContext<SelectedFileContextType | undefined>(undefined);
+
+export const useSelectedFileContext = () => {
+    const context = React.useContext(SelectedFileContext);
+    if (!context) throw new Error('useSelectedFileContext must be used within a SelectedFileProvider');
+    return context;
+}
 
 const PublicFolderPage = () => {
+    const [selectedFile, setSelectedFile] = useState<FileType | null>(null);
     const {folderId} = useParams();
     const {data, error, isLoading} = useFetchFolder<Folder>(undefined, folderId);
 
@@ -26,10 +43,13 @@ const PublicFolderPage = () => {
     }
     
     return (
-        <div className="public-folder-page">
-            <Header />
-            <PublicFoldersManager initialFolder={data!}/>
-        </div>
+        <SelectedFileContext.Provider value={{selectedFile, setSelectedFile}}>
+            <div className="public-folder-page">
+                <Header />
+                <PublicFoldersManager initialFolder={data!}/>
+                <FilesDisplayContainer useSelectedFileContext={useSelectedFileContext} />
+            </div>    
+        </SelectedFileContext.Provider>
     );
 };
 
