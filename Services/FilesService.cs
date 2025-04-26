@@ -29,7 +29,7 @@ public class FilesService: IFilesService
         var filesDirectory = Path.Combine(_env.ContentRootPath, "Files");
         if (!Directory.Exists(filesDirectory)) Directory.CreateDirectory(filesDirectory);
         
-        var newFileName = Guid.NewGuid() + "_" + fileRequest.File.Name;
+        var newFileName = Guid.NewGuid().ToString();
         var filePath = Path.Combine(_env.ContentRootPath, "Files", newFileName);
         await using FileStream stream = new FileStream(filePath, FileMode.Create);
         await fileRequest.File.CopyToAsync(stream);
@@ -51,7 +51,7 @@ public class FilesService: IFilesService
         await _db.SaveChangesAsync();
 
         _logger.LogInformation($"File {uploadedFile.Name} was successfully uploaded to the server");
-        return MapToResponseDto(uploadedFile);
+        return ModelsMapper.MapToFileResponseDto(uploadedFile);
     }
 
     public async Task DeleteFileAsync(Guid fileId)
@@ -83,7 +83,7 @@ public class FilesService: IFilesService
          var files = await _db.Files.Where(f => f.FolderId == folderId).ToListAsync();
          if(files.Count == 0) return new List<FileResponseDto>();
          
-         return files.Select(MapToResponseDto).ToList();
+         return files.Select(ModelsMapper.MapToFileResponseDto).ToList();
     }
     
     public async Task<FileStreamResult> DownloadFileAsync(Guid fileId, ControllerBase contriller)
@@ -102,7 +102,7 @@ public class FilesService: IFilesService
         if (fileInfo is null)
             throw new FileNotFoundException($"File with '{fileId}' id not found");
 
-        return MapToResponseDto(fileInfo);
+        return ModelsMapper.MapToFileResponseDto(fileInfo);
     }
     
     public async Task<string> GetContentOfTextFileAsync(Guid fileId)
@@ -147,23 +147,7 @@ public class FilesService: IFilesService
         await _db.SaveChangesAsync();
         
         _logger.LogInformation($"File {file.Name} was successfully updated");
-        return MapToResponseDto(file);
-    }
-    
-    
-    
-    private static FileResponseDto MapToResponseDto(FileType file){
-        return new FileResponseDto
-        {
-            Id = file.Id,
-            Name = file.Name,
-            Size = file.Size,
-            ContentType = file.ContentType,
-            Path = file.Path,
-            CreatedAt = file.CreatedAt,
-            IsAccessible = file.IsAccessible, 
-            FolderId = file.FolderId
-        };
+        return ModelsMapper.MapToFileResponseDto(file);
     }
 }
 

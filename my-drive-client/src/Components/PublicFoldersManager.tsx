@@ -18,7 +18,7 @@ const PublicFoldersManager = ({initialFolder}: PublicFoldersManagerProps) => {
     
     const handleNavigateBack = async (folder: Folder) => {
         try {
-            const newCurrentFolder = await axiosInstance.get(`Folders/GetFolderById/${folder.parentFolderId}`)
+            const newCurrentFolder = await axiosInstance.get(`Folders/NavigateInsidePublicFolder/${folder.parentFolderId}`)
             setCurrentFolder(newCurrentFolder.data);
         }
         catch(error){
@@ -27,7 +27,7 @@ const PublicFoldersManager = ({initialFolder}: PublicFoldersManagerProps) => {
     }
     const handleNavigateForward = async (folder: Folder) => {
         try {
-            const newCurrentFolder = await axiosInstance.get(`Folders/GetFolderById/${folder.id}`)
+            const newCurrentFolder = await axiosInstance.get(`Folders/NavigateInsidePublicFolder/${folder.id}`)
             setCurrentFolder(newCurrentFolder.data);
         }
         catch(error){
@@ -88,8 +88,7 @@ const PublicFoldersManager = ({initialFolder}: PublicFoldersManagerProps) => {
                                 <FolderItem
                                     isPublic={true}
                                     data={folder}
-                                    onNavigate={handleNavigateForward}
-                                    onSubmitFolderEdit={()=>{}}
+                                    onDoubleClick={handleNavigateForward}
                                 />
                             </div>
                         );
@@ -100,7 +99,6 @@ const PublicFoldersManager = ({initialFolder}: PublicFoldersManagerProps) => {
                                 <FileItem data={file}
                                           isPublic={true}
                                           onSelect={handleSelectFile}
-                                          onSubmitFileEdit={()=>{}}
                                 />
                             </div>
                         )

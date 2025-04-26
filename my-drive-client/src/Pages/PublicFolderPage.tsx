@@ -44,8 +44,8 @@ const PublicFolderPage = () => {
     
     return (
         <SelectedFileContext.Provider value={{selectedFile, setSelectedFile}}>
+            <Header />
             <div className="public-folder-page">
-                <Header />
                 <PublicFoldersManager initialFolder={data!}/>
                 <FilesDisplayContainer useSelectedFileContext={useSelectedFileContext} />
             </div>    

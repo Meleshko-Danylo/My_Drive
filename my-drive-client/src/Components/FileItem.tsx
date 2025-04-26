@@ -8,15 +8,16 @@ import {openFileInNewTab} from "../Api/Files/OpenFileInNewTab";
 import FormPopUpItem from "./FormPopUpItem";
 import {v4 as uuidv4} from "uuid";
 import FormPopUp from "./FormPopUp";
+import editFolder from "../Api/Folders/EditFolder";
+import {updateFileAsync} from "../Api/Files/UpdateFileAsync";
 
 type FileProps = {
     data: FileType;
     onSelect: (file: FileType) => void;
-    onSubmitFileEdit?: () => void;
     isPublic: boolean;
 };
 
-const FileItem = ({data, onSelect, onSubmitFileEdit, isPublic}: FileProps) => {
+const FileItem = ({data, onSelect, isPublic}: FileProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [fileEditForm, setFileEditForm] = useState({
@@ -32,10 +33,17 @@ const FileItem = ({data, onSelect, onSubmitFileEdit, isPublic}: FileProps) => {
     const {mutateAsync: deleteFile} = useMutation({
         mutationFn: deleteFileAsync,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey:['/Folders/GetFolder']})
+            await queryClient.invalidateQueries({queryKey:['/Folders/GetFolder', data.path]})
         }
     })
-
+    const {mutateAsync: editFileAsync} = useMutation({
+        mutationFn: updateFileAsync,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['/Folders/GetFolder', data.path]});
+            setIsOpenFileEdit(prev => !prev);
+        }
+    });
+    
     useEffect(() => {
         
     }, []);
@@ -135,27 +143,34 @@ const FileItem = ({data, onSelect, onSubmitFileEdit, isPublic}: FileProps) => {
             </div>
             {!isPublic && (
                 <FormPopUp title={'Edit file'} isOpen={isOpenFileEdit} buttonRef={buttonRef}
-                           onClose={()=>{setIsOpenFileEdit(prev => !prev)}} onSubmit={()=>{}}>
+                           onClose={()=>{setIsOpenFileEdit(prev => !prev)}} onSubmit={async () => {
+                    await editFileAsync({
+                        fileId: data.id,
+                        isAccessible: fileEditForm.isAccessible,
+                        name: fileEditForm.name,
+                        folderId: data.folderId ?? '',
+                    })}}>
 
-                    <FormPopUpItem label={'Name'} value={fileEditForm.name} className={''}
+                    <FormPopUpItem label={'Name'} value={fileEditForm.name} 
                                    onChange={(e) => {
                                        setFileEditForm((prev) =>
                                            ({...prev, name:e.target.value}))
                                    }}
                                    inputType={'text'}/>
-                    <FormPopUpItem label={'Folder'} value={fileEditForm.path} className={''}
-                                   onChange={(e) => {setFileEditForm((prev) =>
-                                       ({...prev, path:e.target.value}))}}
-                                   inputType={'text'}/>
+                    {/*<FormPopUpItem label={'Folder'} value={fileEditForm.path} className={''}*/}
+                    {/*               onChange={(e) => {setFileEditForm((prev) =>*/}
+                    {/*                   ({...prev, path:e.target.value}))}}*/}
+                    {/*               inputType={'text'}/>*/}
                     <FormPopUpItem label={'Public'} value={fileEditForm.isAccessible} className={''}
                                    onChange={(e) => {setFileEditForm((prev =>
                                        ({...prev, isAccessible:e.target.checked})))}}
                                    inputType={'checkbox'} />
                     {fileEditForm.isAccessible && (
-                        <>
-                            <input type="text" value={publicUrlInput}/>
-                            <button onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
-                        </>
+                        <div style={{display: 'flex'}}>
+                            <input type="text" className="edit-popup-item-input" value={publicUrlInput}/>
+                            <button className="copy-public-link-button" 
+                                onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
+                        </div>
                     )}
                 </FormPopUp>
             )}

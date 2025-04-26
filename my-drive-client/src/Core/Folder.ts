@@ -17,3 +17,17 @@ export type CreateFolderDto = {
     isAccessible: boolean,
     parentFolderId: string
 };
+
+export type EditFolderDto = {
+    id: string,
+    name: string,
+    path: string,
+    isAccessible: boolean,
+    parentFolderId: string
+}
+
+export type UploadFolderDto = {
+    files: File[],
+    isAccessible: boolean,
+    parentFolderId: string
+}

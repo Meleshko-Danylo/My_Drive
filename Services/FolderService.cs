@@ -2,6 +2,8 @@ using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyDrive.Data;
+using MyDrive.DTO.File;
+using MyDrive.DTO.Folder;
 using MyDrive.Models;
 
 namespace MyDrive.Services
@@ -10,15 +12,18 @@ namespace MyDrive.Services
     {
         Task<FileResult> DownloadFolderAsZip(Guid folderId, ControllerBase controller);
         Task<Folder> GetFullFolder(Guid id);
+        Task<List<FileResponseDto>> UploadFolder(UploadFolderDto dto);
     }
 
     public class FolderService : IFolderService
     {
         private readonly AppDbContext _db;
+        private readonly IWebHostEnvironment _env;
         
-        public FolderService(AppDbContext db)
+        public FolderService(AppDbContext db, IWebHostEnvironment env)
         {
             _db = db;
+            _env = env;
         }
         
         public async Task<Folder> GetFullFolder(Guid id)
@@ -34,7 +39,72 @@ namespace MyDrive.Services
             
             return folder;
         }
-        
+
+        public async Task<List<FileResponseDto>> UploadFolder(UploadFolderDto dto)
+        {
+            var parentFolder = await _db.Folders.FindAsync(Guid.Parse(dto.ParentFolderId));
+            if (parentFolder == null) throw new Exception("Parent folder does not exist.");
+            
+            var filesDirectory = Path.Combine(_env.ContentRootPath, "Files");
+            if (!Directory.Exists(filesDirectory)) Directory.CreateDirectory(filesDirectory);
+            var uploadedFiles = new List<FileResponseDto>();
+            
+            try {
+                var filesByDirectory = dto.Files
+                    .GroupBy(f => Path.GetDirectoryName(f.FileName.Replace("\\", "/")))
+                    .ToDictionary(g => g.Key ?? "", g => g.ToList());
+                foreach (var directory in filesByDirectory)
+                {
+                    var relativePath = directory.Key;
+                    var directoryPath = $"{parentFolder.Path}{(relativePath.Length > 0 ? relativePath + "/" : "")}";
+                    var newFolder = new Folder()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = relativePath.Split("/").Last(),
+                        Path = directoryPath,
+                        IsAccessible = dto.IsAccessible,
+                        CreatedAt = DateTime.UtcNow,
+                        ParentFolderId = Guid.Parse(dto.ParentFolderId)
+                    };
+                    _db.Folders.Add(newFolder);
+
+                    foreach (var file in directory.Value)
+                    {
+                        var fileName = Path.GetFileName(file.FileName);
+                        var newFileName = Guid.NewGuid().ToString();
+                        var filePathInDb = $"{directoryPath}{fileName}";
+                        var storagePath = Path.Combine(filesDirectory, newFileName);
+                        await using (var stream = new FileStream(storagePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var uploadedFile = new FileType()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = fileName,
+                            StoragePath = storagePath,
+                            CreatedAt = DateTime.UtcNow,
+                            FolderId = newFolder.Id,
+                            IsAccessible = dto.IsAccessible,
+                            Path = filePathInDb,
+                            Size = file.Length,
+                            ContentType = file.ContentType
+                        };
+                        await _db.Files.AddAsync(uploadedFile);
+                        parentFolder.Size += uploadedFile.Size;
+                        uploadedFiles.Add(ModelsMapper.MapToFileResponseDto(uploadedFile));
+                    }
+                }
+                await _db.SaveChangesAsync();
+                return uploadedFiles;
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         private async Task LoadSubfoldersRecursively(Folder folder)
         {
             if (folder == null) return;

@@ -15,6 +15,7 @@ public class FoldersController: ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly IFolderService _folderService;
+    private readonly ILogger<FoldersController> _logger;
 
     public FoldersController(AppDbContext db, IFolderService folderService)
     {
@@ -54,7 +55,7 @@ public class FoldersController: ControllerBase
     
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<Folder>> GetFolderById(string id)
+    public async Task<ActionResult<Folder>> GetPublicFolderById(string id)
     {
         var folder = await _db.Folders
             .AsNoTracking()
@@ -65,6 +66,21 @@ public class FoldersController: ControllerBase
             return NotFound();
         if (!folder.IsAccessible)
             return Forbid();
+
+        return Ok(folder);
+    }
+    
+    [HttpGet("{id}")]
+    [Authorize]
+    public async Task<ActionResult<Folder>> NavigateInsidePublicFolder(string id)
+    {
+        var folder = await _db.Folders
+            .AsNoTracking()
+            .Include(f => f.SubFolders)
+            .Include(f => f.Files)
+            .FirstOrDefaultAsync(f => f.Id == Guid.Parse(id));
+        if(folder is null)
+            return NotFound();
 
         return Ok(folder);
     }
@@ -91,6 +107,22 @@ public class FoldersController: ControllerBase
         return CreatedAtAction(nameof(GetFolder), new {path = newFolder.Path}, newFolder);
     }
     
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UploadFolder([FromForm] UploadFolderDto folder)
+    {
+        // if (!ModelState.IsValid) return BadRequest(ModelState);
+        try {
+            var uploadedFolder = await _folderService.UploadFolder(folder);
+            return Ok(uploadedFolder);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+    
     [HttpPut]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateFolder([FromBody] UpdateFolderDto folder)
@@ -98,17 +130,12 @@ public class FoldersController: ControllerBase
         if (!ModelState.IsValid) return BadRequest();
         var existingFolder = await _db.Folders.FirstOrDefaultAsync(f => f.Id == folder.Id);
         if (existingFolder is null) return NotFound();
-        var updatedFolder = new Folder()
-        {
-            Id = folder.Id,
-            Name = folder.Name,
-            Path = folder.Path,
-            Size = folder.Size,
-            IsAccessible = folder.IsAccessible,
-            Files = folder.Files,
-            SubFolders = folder.SubFolders,
-        };
-        _db.Folders.Update(updatedFolder);
+        
+        existingFolder.Name = folder.Name;
+        existingFolder.Path = folder.Path;
+        existingFolder.IsAccessible = folder.IsAccessible;
+        
+        _db.Folders.Update(existingFolder);
         await _db.SaveChangesAsync();
         
         return Ok();

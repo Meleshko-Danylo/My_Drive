@@ -34,6 +34,33 @@
     padding: 5px 10px;
 }
 
+.custom-file-upload{
+    padding: 5px;
+    cursor: pointer;
+    background-color: #68b9ee;
+    color: #fff;
+    border-radius: 5px;
+    text-wrap: nowrap;
+}
+
+.copy-public-link-button{
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+    box-shadow: var(--shadow-low);
+    transition: all 0.2s ease-in-out;
+}
+
+.copy-public-link-button:hover{
+    color: white;
+    background-color: rgb(79, 163, 240);
+}
+
+.copy-public-link-button:active{
+    transform: scale(0.95);
+}
+
 .edit-popup form{
     display: flex;
     flex-direction: column;
@@ -46,14 +73,20 @@
     flex-direction: column;
     align-items: start;
     padding: 5px;
-    gap: 12px;
+    gap: 11px;
     max-width: 180px;
+    align-self: start;
 }
 
 .edit-popup-item-input{
     padding: 6px 5px;
     border-radius: 4px;
     border: solid 1px #b0b0b0;
+    max-width: 130px;
+}
+
+input[type="file"]{
+    display: none;
 }
 
 .edit-popup-buttons{
