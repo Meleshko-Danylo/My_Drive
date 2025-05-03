@@ -49,29 +49,79 @@ const FileItem = ({data, onSelect, isPublic}: FileProps) => {
     }, []);
     
     const handleDoubleClick = async () => {
-        if(data && (data.contentType === 'application/pdf' ||
-            data.contentType.includes('google-docs') ||
-            data.contentType.includes('ms-word') ||
-            data.contentType.includes('ms-excel') ||
-            data.contentType.includes('ms-powerpoint'))){
+        if (!data || !data.contentType) {
+            console.error("Missing data or contentType in handleDoubleClick:", data);
+            return;
+        }
+        
+        // Convert to lowercase for case-insensitive comparison
+        const contentType = data.contentType.toLowerCase();
+        
+        if (contentType === 'application/pdf' ||
+            contentType.includes('google-docs') ||
+            contentType.includes('word') ||
+            contentType.includes('excel') ||
+            contentType.includes('powerpoint') ||
+            contentType.includes('msword') ||
+            contentType.includes('spreadsheetml') ||
+            contentType.includes('presentationml')) {
             await openFileInNewTab(data);
         }
-        else if (data && (data.contentType.startsWith('text') ||
-        data.contentType.startsWith('image'))) onSelect(data);
-        else await downloadFileAsync(data.id, data.name);
+        else if (contentType.startsWith('text/') ||
+                contentType.startsWith('image/') ||
+                contentType.startsWith('video/')) {
+            onSelect(data);
+        }
+        else {
+            await downloadFileAsync(data.id, data.name);
+        }
     }
     
     const getFileIconClass = (): string => {
-        if(data.contentType.startsWith("image")) {
-            return "file-icon-image"
-        } else if(data.contentType.startsWith("video")){
-            return "file-icon-video"
-        } else if(data.contentType.startsWith("audio")){
-            return "file-icon-audio"
-        } 
-        // else if(data.contentType.startsWith("text")){
-        //     return "file-icon-text"
-        // }
+        if (!data || !data.contentType) {
+            return "file-icon";
+        }
+        const contentType = data.contentType.toLowerCase();
+        
+        if (contentType.startsWith("image/")) {
+            return "file-icon-image";
+        } else if (contentType.startsWith("video/")) {
+            return "file-icon-video";
+        } else if (contentType.startsWith("audio/")) {
+            return "file-icon-audio";
+        } else if (contentType.startsWith("text/")) {
+            return "file-icon-text";
+        } else if (contentType === "application/pdf") {
+            return "file-icon-pdf";
+        } else if (contentType.includes("word") || 
+                  contentType.includes("wordprocessingml") || 
+                  contentType.includes("msword") ||
+                  contentType.includes("document")) {
+            return "file-icon-word";
+        } else if (contentType.includes("excel") || 
+                  contentType.includes("spreadsheetml") || 
+                  contentType.includes("sheet")) {
+            return "file-icon-excel";
+        } else if (contentType.includes("powerpoint") || 
+                  contentType.includes("presentationml") || 
+                  contentType.includes("presentation")) {
+            return "file-icon-powerpoint";
+        } else if (contentType.includes("google-docs")) {
+            return "file-icon-gdoc";
+        } else if (contentType.includes("zip") || 
+                  contentType.includes("rar") || 
+                  contentType.includes("tar") || 
+                  contentType.includes("compressed") ||
+                  contentType.includes("archive")) {
+            return "file-icon-archive";
+        } else if (contentType.includes("javascript") || 
+                  contentType.includes("json") || 
+                  contentType.includes("html") || 
+                  contentType.includes("css") ||
+                  contentType.includes("code") ||
+                  contentType.includes("xml")) {
+            return "file-icon-code";
+        }
         return "file-icon";
     }
 
@@ -83,7 +133,7 @@ const FileItem = ({data, onSelect, isPublic}: FileProps) => {
     return (
         <>
             <div className="folderManager-item">
-                <div onDoubleClick={handleDoubleClick}>
+                <div style={{display: "flex", alignItems: "center"}} onDoubleClick={handleDoubleClick}>
                     <span className={getFileIconClass()}></span>{data.name}
                 </div>
                 <div>
@@ -167,7 +217,7 @@ const FileItem = ({data, onSelect, isPublic}: FileProps) => {
                                    inputType={'checkbox'} />
                     {fileEditForm.isAccessible && (
                         <div style={{display: 'flex'}}>
-                            <input type="text" className="edit-popup-item-input" value={publicUrlInput}/>
+                            <input type="text" className="edit-popup-item-input" value={publicUrlInput} onChange={() => {}}/>
                             <button className="copy-public-link-button" 
                                 onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
                         </div>

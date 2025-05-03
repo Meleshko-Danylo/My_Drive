@@ -1,4 +1,4 @@
-﻿import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {User} from "../Core/User";
 import {useNavigate} from "react-router";
 import {axiosInstance} from "../index";
@@ -10,6 +10,7 @@ type AuthContextType = {
     logout:()=>void;
     isAdmin: boolean;
     getCurrentUser: ()=>Promise<void>;
+    loginWithGoogle: ()=>void;
 }
 
 const AuthContextProvider = React.createContext<AuthContextType | undefined>(undefined);
@@ -33,7 +34,7 @@ const AuthContext = ({children}:{children:ReactNode}) => {
         }
         catch(error){
             setUser(null);
-            navigate('/');
+            navigate('/login');
             console.error(error);
         }
         finally {
@@ -65,10 +66,14 @@ const AuthContext = ({children}:{children:ReactNode}) => {
         }
     }
     
+    const loginWithGoogle = () => {
+        window.location.href = "/api/account/login/google?returnUrl=/App";
+    };
+    
     const isAdmin = user?.role === "Admin";
     
     return (
-        <AuthContextProvider.Provider value={{login, logout, user, isAdmin, loading, getCurrentUser}}>
+        <AuthContextProvider.Provider value={{login, logout, user, isAdmin, loading, getCurrentUser, loginWithGoogle}}>
             {children}
         </AuthContextProvider.Provider>
     );

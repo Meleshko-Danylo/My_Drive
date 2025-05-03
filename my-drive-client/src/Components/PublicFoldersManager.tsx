@@ -5,6 +5,7 @@ import {useSelectedFileContext} from "../Pages/PublicFolderPage";
 import {FileType} from "../Core/FileType";
 import FolderItem from "./FolderItem";
 import FileItem from "./FileItem";
+import {downloadFolderAsync} from "../Api/Folders/DownloadFolderAsync";
 
 type PublicFoldersManagerProps = {
     initialFolder: Folder;
@@ -80,6 +81,17 @@ const PublicFoldersManager = ({initialFolder}: PublicFoldersManagerProps) => {
                             </span>
                         </div>
                     )}
+                    <div className="toolsBar-buttons">
+                        <button onClick={async ()=>{
+                            try {
+                                await downloadFolderAsync(currentFolder.id, currentFolder.name);
+                            } catch (error) {
+                                console.error('Download failed:', error);
+                                alert('Failed to download folder. Please try again.');
+                            }
+                        }}
+                                className="uploadFile">Download Folder</button>
+                    </div>
                 </div>
                 <div className="insideDirectory">
                     {currentFolder.subFolders.map((folder:any)=>{

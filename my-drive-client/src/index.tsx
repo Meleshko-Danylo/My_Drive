@@ -30,16 +30,17 @@ root.render(
         <AuthContext>
             <QueryClientProvider client={queryClient}>
                 <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<LogIn />} />
+                    <Route path="/Register" element={<Register />} />
                     <Route path="/App/*" element={
                         <ProtectedRoute isForAdminOnly={true}>
                             <App />
                         </ProtectedRoute>
                     } />
-                    <Route path="/Register" element={<Register />} />
-                    <Route path="/" element={<LogIn />} />
                     <Route path='/Folder/p/:folderId' element={<ProtectedRoute isForAdminOnly={false}><PublicFolderPage /></ProtectedRoute>} />
                     <Route path="/File/p/:fileId" element={<ProtectedRoute isForAdminOnly={false}><PublicFilePage /></ProtectedRoute>} />
-                    <Route path='/Home' element={<ProtectedRoute isForAdminOnly={false}><Home /></ProtectedRoute>}></Route>
+                    <Route path='/dashboard' element={<ProtectedRoute isForAdminOnly={false}><App /></ProtectedRoute>}></Route>
                     <Route path='*' element={<div style={{display: 'flex', justifyContent:'center', alignItems:'center', 
                         height: '100vh', fontSize: '3rem', fontWeight: 'bold', width: '100%', color: '#fff'}}>404</div>} />
                 </Routes>

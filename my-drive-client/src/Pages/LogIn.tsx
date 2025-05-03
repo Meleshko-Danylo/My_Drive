@@ -25,6 +25,10 @@ const LogIn = () => {
             console.log("Error", err)
         }
     }
+    
+    const handleGoogleLogin = () =>{
+        window.location.href = "https://localhost:5001/api/account/login/google?returnUrl=https://localhost:3000/";
+    }
 
     return (
         <div className="RegisterForm-container">
@@ -40,6 +44,9 @@ const LogIn = () => {
                 </div>
                 <div className="FormSubmitButton">
                     <button type="submit">Submit</button>
+                </div>
+                <div className="google-login-container">
+                    <button onClick={() => window.location.href = "/auth/google"} className="GoogleLogin-button">Sign In with Google</button>
                 </div>
                 <Link to="/Register" className="Links">Register</Link>
             </form>

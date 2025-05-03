@@ -36,11 +36,11 @@ public class FilesController: ControllerBase
         }
     }
 
-    [HttpGet("{fileId:guid}")]
-    public async Task<ActionResult<FileResponseDto>> GetFile(Guid fileId)
+    [HttpGet("{fileId}")]
+    public async Task<ActionResult<FileResponseDto>> GetFile(string fileId)
     {
         try {
-            var file = await _filesService.GetFileInfoAsync(fileId);
+            var file = await _filesService.GetFileInfoAsync(Guid.Parse(fileId));
             return Ok(file);
         }
         catch (Exception e) {

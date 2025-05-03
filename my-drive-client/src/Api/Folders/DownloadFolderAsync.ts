@@ -2,7 +2,7 @@ import {axiosInstance} from "../../index";
 
 export const downloadFolderAsync = async (folderId: string, folderName?: string) => {
     try {
-        const response = await axiosInstance.get(`/Folders/DownloadFolder/${folderId}`, {
+        const response = await axiosInstance.get(`Folders/DownloadFolder/${folderId}`, {
             responseType: 'blob'
         });
         

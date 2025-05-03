@@ -36,12 +36,17 @@ const FIlePreviewPopUp = ({file, onClose, onOpenInNewTabClick}: FIlePreviewPopUp
                 if(file.contentType.startsWith('text')){
                     setContent(await GetFileContentAsync(file));
                 }
-                if(file.contentType.startsWith("image")){
+                else if(file.contentType.startsWith("image")){
                     const {url} = await getFileBlobAsync(file.id);
                     setContent(url);
                     setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
                 }
-                if(file.contentType === 'application/pdf'){
+                else if(file.contentType.startsWith("video")){
+                    const {url} = await getFileBlobAsync(file.id);
+                    setContent(url);
+                    setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+                }
+                else if(file.contentType === 'application/pdf'){
                     const {url} = await getFileBlobAsync(file.id);
                     const newWindow = window.open(url, '_blank');
                     if(newWindow){
@@ -93,6 +98,13 @@ const FIlePreviewPopUp = ({file, onClose, onOpenInNewTabClick}: FIlePreviewPopUp
                                 (<pre className="file-preview-text">{content}</pre>)
                                 || file.contentType.startsWith('image') &&
                                 (<img src={content} alt={`${file.name}`} className="file-preview-image"/>)
+                                || file.contentType.startsWith('video') && (
+                                    <div className="file-preview-video-container">
+                                        <video src={content} controls className="file-preview-video" autoPlay={false}>
+                                            Your browser does not support the video tag.
+                                        </video> 
+                                    </div>
+                                )
                                 || file.contentType === 'application/pdf' &&
                                 (<iframe src={content} title={`PDF preview of ${file.name}`}
                                          className="file-preview-pdf"/>)

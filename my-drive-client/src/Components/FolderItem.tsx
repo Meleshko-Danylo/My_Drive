@@ -57,7 +57,7 @@ const FolderItem = ({data, onNavigate, onDoubleClick, isPublic}: FolderProps) =>
             <div
                 className="folderManager-item"
             >
-                <div onDoubleClick={handleNavigationClick}>
+                <div style={{display: "flex", alignItems: "center"}} onDoubleClick={handleNavigationClick}>
                     <span className="folder-icon">📁</span> {data.name}
                 </div>
                 <div>
@@ -138,7 +138,7 @@ const FolderItem = ({data, onNavigate, onDoubleClick, isPublic}: FolderProps) =>
                                    inputType={'checkbox'}/>
                     {folderEditForm.isAccessible && (
                         <div style={{display: 'flex'}}>
-                            <input type="text" className="edit-popup-item-input" value={publicUrlInput}/>
+                            <input type="text" className="edit-popup-item-input" value={publicUrlInput} onChange={() => {}}/>
                             <button className="copy-public-link-button" 
                                 onClick={(e) => handleCopyClick(e, publicUrlInput)} >Copy</button>
                         </div>

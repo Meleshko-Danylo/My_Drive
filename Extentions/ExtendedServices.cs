@@ -56,6 +56,17 @@ public static class ExtendedServices
             {
                 opt.Cookie.Name = "MyDrive.Auth";
                 opt.ExpireTimeSpan = TimeSpan.FromDays(14);
+            })
+            .AddGoogle(opt =>
+            {
+                var clintId = configuration["Authentication:Google:ClientId"];
+                var clientSecret = configuration["Authentication:Google:ClientSecret"];
+                
+                if (string.IsNullOrEmpty(clintId) || string.IsNullOrEmpty(clientSecret))
+                    throw new Exception("Please add Google Client Id and Secret to appsettings.json file.");
+                
+                opt.ClientId = clintId;
+                opt.ClientSecret = clientSecret;
             });
 
         services.AddCors(policy =>

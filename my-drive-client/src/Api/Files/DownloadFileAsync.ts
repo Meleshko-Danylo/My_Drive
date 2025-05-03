@@ -2,7 +2,7 @@ import {axiosInstance} from "../../index";
 
 export const downloadFileAsync = async (fileId: string, fileName?: string) => {
     try {
-        const response = await axiosInstance.get(`/Files/DownloadFile/${fileId}`, {
+        const response = await axiosInstance.get(`Files/DownloadFile/${fileId}`, {
             responseType: 'blob'
         });
 
